@@ -1,0 +1,3 @@
+python-flask
+numpy
+python >= 2.7
