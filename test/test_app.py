@@ -5,11 +5,11 @@ import comp61542
 class TestApp(unittest.TestCase):
 
     def setUp(self):
-        dir, _ = path.split(__file__)
+        directory, _ = path.split(__file__)
         data = "dblp_curated_sample.xml"
         comp61542.app.config['TESTING'] = True
         comp61542.app.config['DATASET'] = data
-        comp61542.app.config['DATABASE'] = path.join(dir, "..", "data", data)
+        comp61542.app.config['DATABASE'] = path.join(directory, "..", "data", data)
         self.app = comp61542.app.test_client()
 
     def test_home(self):
