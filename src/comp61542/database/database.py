@@ -24,7 +24,7 @@ class Publication:
 class Author:
     def __init__(self, name):
         self.name = name
-
+    
 class Stat:
     STR = ["Mean", "Median", "Mode"]
     FUNC = [average.mean, average.median, average.mode]
@@ -361,6 +361,44 @@ class Database:
                 if a < a2:
                     links.add((a, a2))
         return (nodes, links)
+
+    
+    def search_by_author(self, auth_name):
+        pub_list = []
+        authors = [ author.name for author in self.authors ]
+        author_index = authors.index(auth_name)
+        for p in self.publications:
+            if author_index in p.authors:
+                pub_list.append(p)
+        return pub_list
+
+    
+    def get_times_as_first(self, auth_name):
+        pub_list = self.search_by_author(auth_name)
+        authors = [ author.name for author in self.authors ]
+        author_index = authors.index(auth_name)
+        counter = 0
+        for p in pub_list:
+            if p.authors[0] == author_index:
+                counter +=1
+        return counter
+
+    
+    def get_times_as_last(self, auth_name):
+        pub_list = self.search_by_author(auth_name)
+        authors = [ author.name for author in self.authors ]
+        author_index = authors.index(auth_name)
+        counter = 0
+        for p in pub_list:
+            if p.authors[-1] == author_index:
+                counter +=1
+        return counter
+    
+    
+    
+    
+    
+    
 
 class DocumentHandler(handler.ContentHandler):
     TITLE_TAGS = [ "sub", "sup", "i", "tt", "ref" ]
