@@ -16,5 +16,6 @@ class TestApp(unittest.TestCase):
         r = self.app.get("/")
         self.assertEqual(200, r.status_code, "Status code was not 'OK'.")
 
+    
 if __name__ == '__main__':
     unittest.main()

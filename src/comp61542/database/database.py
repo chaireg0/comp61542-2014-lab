@@ -1,7 +1,8 @@
-from comp61542.statistics import average
+from comp61542.statistics import average, utils
 import itertools
 import numpy as np
 from xml.sax import handler, make_parser, SAXException
+from comp61542 import app
 
 PublicationType = [
     "Conference Paper", "Journal", "Book", "Book Chapter"]
@@ -20,6 +21,16 @@ class Publication:
         else:
             self.year = -1
         self.authors = authors
+
+    
+    def to_textlist(self):
+        authors = ""
+        for author in self.authors:
+            authors += app.config["DATABASE"].authors[author].name + ", "
+        authors = authors[0:len(authors)-2]
+        return [PublicationType[self.pub_type], self.title, str(self.year), authors]
+
+    
 
 class Author:
     def __init__(self, name):
@@ -190,6 +201,13 @@ class Database:
             ["Number of authors"] + [ len(a) for a in alist ] + [len(ua)] ]
         return (header, data)
 
+    def sortPublicationsByYear(self):
+        return sorted(self.publications, key=lambda pub: pub.year) # sort by publication's year
+
+    def sortPublicationsByTitle(self):
+        return sorted(self.publications, key=lambda pub: pub.title) # sort by publication's title
+
+
     def get_average_authors_per_publication_by_author(self, av):
         header = ("Author", "Number of conference papers",
             "Number of journals", "Number of books",
@@ -207,6 +225,9 @@ class Database:
             + [ func(list(itertools.chain(*astats[i]))) ]
             for i in range(len(astats)) ]
         return (header, data)
+
+    def sortPublicationsByFirstAuthors(self):
+        return sorted(self.publications, key=lambda pub: self.authors[pub.authors[0]].name) # sort by author's name
 
 
     def get_publications_by_author(self):
@@ -299,6 +320,13 @@ class Database:
                 s.add(a)
         data = [ [y] + [len(s) for s in ystats[y]] + [len(ystats[y][0] | ystats[y][1] | ystats[y][2] | ystats[y][3])]
             for y in ystats ]
+        return (header, data)
+
+    def get_publication_list(self):
+        header = ("Type", "Title",
+            "Year", "Authors")
+        data = utils.table_from_pubs(self.publications)
+        
         return (header, data)
 
     def add_publication(self, pub_type, title, year, authors):

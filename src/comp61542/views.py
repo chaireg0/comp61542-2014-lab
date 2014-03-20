@@ -1,7 +1,7 @@
 from comp61542 import app
 from database import database
 from flask import (render_template, request)
-
+from comp61542.statistics import utils
 def format_data(data):
     fmt = "%.2f"
     result = []
@@ -99,7 +99,7 @@ def showPublicationSummary(status):
     dataset = app.config['DATASET']
     db = app.config['DATABASE']
     args = {"dataset":dataset, "id":status}
-
+    
     if (status == "publication_summary"):
         args["title"] = "Publication Summary"
         args["data"] = db.get_publication_summary()
@@ -117,3 +117,24 @@ def showPublicationSummary(status):
         args["data"] = db.get_author_totals_by_year()
 
     return render_template('statistics_details.html', args=args)
+
+@app.route("/publications/<sortby>")
+def displayPublications(sortby):
+    dataset = app.config['DATASET']
+    db = app.config['DATABASE']
+    args = {"dataset":dataset, "id":sortby}
+    
+    if (sortby == "year"):
+        args["title"] = "Publications"  
+        db.publications = db.sortPublicationsByYear()
+    elif (sortby == "author"):
+        args["title"] = "Publications"
+        db.publications = db.sortPublicationsByFirstAuthors()
+    elif (sortby == "title"):
+        db.publications = db.sortPublicationsByTitle()
+    else:
+        db.publications = db.sortPublicationsByTitle()
+    args["data"] = db.get_publication_list()
+    
+    return render_template('publications.html', args=args)
+    
