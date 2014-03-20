@@ -125,10 +125,15 @@ def displayPublications(sortby):
     args = {"dataset":dataset, "id":sortby}
     
     if (sortby == "year"):
+        args["title"] = "Publications"  
+        db.publications = db.sortPublicationsByYear()
+    elif (sortby == "author"):
         args["title"] = "Publications"
-        
-        db.publications = utils.sortPublicationsByYear(db.publications)
-        
+        db.publications = db.sortPublicationsByFirstAuthors()
+    elif (sortby == "title"):
+        db.publications = db.sortPublicationsByTitle()
+    else:
+        db.publications = db.sortPublicationsByTitle()
     args["data"] = db.get_publication_list()
     
     return render_template('publications.html', args=args)

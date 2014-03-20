@@ -201,6 +201,13 @@ class Database:
             ["Number of authors"] + [ len(a) for a in alist ] + [len(ua)] ]
         return (header, data)
 
+    def sortPublicationsByYear(self):
+        return sorted(self.publications, key=lambda pub: pub.year) # sort by publication's year
+
+    def sortPublicationsByTitle(self):
+        return sorted(self.publications, key=lambda pub: pub.title) # sort by publication's title
+
+
     def get_average_authors_per_publication_by_author(self, av):
         header = ("Author", "Number of conference papers",
             "Number of journals", "Number of books",
@@ -218,6 +225,9 @@ class Database:
             + [ func(list(itertools.chain(*astats[i]))) ]
             for i in range(len(astats)) ]
         return (header, data)
+
+    def sortPublicationsByFirstAuthors(self):
+        return sorted(self.publications, key=lambda pub: self.authors[pub.authors[0]].name) # sort by author's name
 
 
     def get_publications_by_author(self):
