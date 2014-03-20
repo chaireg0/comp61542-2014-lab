@@ -1,7 +1,7 @@
 '''
 Created on 18 Mar 2014
 
-@author: vnicolao
+author: vnicolao
 '''
 
 class Academic(object):
@@ -32,4 +32,3 @@ class Academic(object):
             sum_of_publications += len(self.publications[key])
             counter += 1
         return sum_of_publications/float(counter)
-    
