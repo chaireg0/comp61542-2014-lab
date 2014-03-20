@@ -21,19 +21,19 @@ def mode(X):
         return []
 
     d = {}
-    max = 0
+    max_val = 0
     for item in X:
         if d.has_key(item):
             d[item] += 1
         else:
             d[item] = 1
         
-        if d[item] > max:
-            max = d[item]
+        if d[item] > max_val:
+            max_val = d[item]
 
     m = []
     for key in d.keys():
-        if d[key] == max:
+        if d[key] == max_val:
             m.append(key)
     m.sort()
     return m 
