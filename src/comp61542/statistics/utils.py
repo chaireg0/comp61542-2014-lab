@@ -13,3 +13,10 @@ def sortPublicationsByYear(publist):
 
 def sortPublicationsByTitle(publist):
     return sorted(publist, key=lambda pub: pub.title) # sort by publication's title
+
+def table_from_pubs(pubs):
+    pubs_table = []
+    for pub in pubs:
+        pubs_table.append(pub.to_textlist())
+
+    return pubs_table
