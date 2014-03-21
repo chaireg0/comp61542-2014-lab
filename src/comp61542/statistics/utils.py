@@ -28,10 +28,10 @@ def author_all_stats(author):
             str(author['last']), str(author['Total']), str(author['coauthors'])]
 
 
-def author_all_stats_table(author1, author2):
+def author_all_stats_table(author):
     header = ("Name", "Conference Papers", "Journal", "Book", "Book Chapters",
               "No. of first author", "No. of last author", "Total Publications",
               "Co-authors")
-    return (header, [author_all_stats(author1), author_all_stats(author2)])
+    return (header, [author_all_stats(author)])
 
 
