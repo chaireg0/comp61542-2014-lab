@@ -25,10 +25,16 @@ class TestSearchAuthorStatistics(unittest.TestCase):
                 
         pub_list = self.db.search_by_author("Author1")
         self.assertTrue(self.pub1 in pub_list and self.pub2 in pub_list and self.pub3 in pub_list)
+        
+        pub_list = self.db.search_by_author("Author3")
+        self.assertTrue(self.pub1 in pub_list and self.pub2 in pub_list)
 
     def test_that_author_appears_n_times_as_first_author(self):
         n = self.db.get_times_as_first("Author1")
         self.assertEqual(n, 2)
+        
+        n = self.db.get_times_as_first("Author2")
+        self.assertEqual(n, 0)
     
     def test_that_author_appears_n_times_as_last_author(self):
         n = self.db.get_times_as_last("Author1")
