@@ -168,9 +168,8 @@ def displayAuthorStats(authorname):
     db = app.config['DATABASE']
     args = {"dataset":dataset, "id":authorname}
     author_stats = db.get_author_stats(authorname)
-    author = {'name':authorname, "Conference Papers": author_stats[0], "Journal": author_stats[1], "Book": author_stats[2],
+    author = {'name':authorname, "Conference": author_stats[0], "Journal": author_stats[1], "Book": author_stats[2],
                   "Book Chapter": author_stats[3], "first": author_stats[4], "last": author_stats[5],
-                  "Total": author_stats[6], "Co-Authors": author_stats[7]}
-    
+                  "Total": author_stats[6], "coauthors": author_stats[7]}
     args['data'] = utils.author_all_stats_table(author)
-    return render_template('search_for_author', args=args)
+    return render_template('search_for_author.html', args=args)
