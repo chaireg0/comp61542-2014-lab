@@ -206,6 +206,9 @@ class Database:
 
     def sortPublicationsByTitle(self):
         return sorted(self.publications, key=lambda pub: pub.title) # sort by publication's title
+    
+    def sortPublicationsByType(self):
+        return sorted(self.publications, key=lambda pub: PublicationType[pub.pub_type]) # sort by publication's type
 
 
     def get_average_authors_per_publication_by_author(self, av):

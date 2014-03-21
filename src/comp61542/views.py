@@ -123,15 +123,17 @@ def displayPublications(sortby):
     dataset = app.config['DATASET']
     db = app.config['DATABASE']
     args = {"dataset":dataset, "id":sortby}
-    
+    sortby = sortby.lower()
     if (sortby == "year"):
         args["title"] = "Publications"  
         db.publications = db.sortPublicationsByYear()
-    elif (sortby == "author"):
+    elif (sortby == "authors"):
         args["title"] = "Publications"
         db.publications = db.sortPublicationsByFirstAuthors()
     elif (sortby == "title"):
         db.publications = db.sortPublicationsByTitle()
+    elif sortby == "type":
+        db.publications = db.sortPublicationsByType()
     else:
         db.publications = db.sortPublicationsByTitle()
     args["data"] = db.get_publication_list()

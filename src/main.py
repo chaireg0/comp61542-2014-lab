@@ -17,10 +17,10 @@ else:
 app.config['DATASET'] = dataset
 app.config['DATABASE'] = db
 
-#if "DEBUG" in os.environ:
-app.config['DEBUG'] = True
+if "DEBUG" in os.environ:
+    app.config['DEBUG'] = True
 
-#if "TESTING" in os.environ:
-app.config['TESTING'] = True
+if "TESTING" in os.environ:
+    app.config['TESTING'] = True
 
 app.run(host='0.0.0.0', port=9292)
