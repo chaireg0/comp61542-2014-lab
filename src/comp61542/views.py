@@ -152,6 +152,16 @@ def displayAuthorFirstLastStats(authorname):
     args['data'] = utils.author_stats_fist_last_table(author)
     return render_template('author_first_last.html', args=args)
 
+@app.route("/stats/<field>")
+def sortByField(field):
+    db = app.config['DATABASE']
+    dataset = app.config['DATASET']
+    field = int(field)
+    args = {"dataset":dataset, "id":field}
+    db.sort_cache_generic(field)
+    args['data'] = (db.header_cache, db.cache)
+    return render_template('statistics_details.html', args = args)
+    
 @app.route("/author/search/<authorname>")
 def displayAuthorStats(authorname):
     dataset = app.config['DATASET']

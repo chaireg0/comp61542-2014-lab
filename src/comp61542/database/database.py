@@ -100,6 +100,7 @@ class Database:
             return "%s (%d)" % (db.authors[author_id].name, len(coauthors[author_id]))
 
         header = ("Author", "Co-Authors")
+        self.header_cache = header
         data = []
         for a in coauthors:
             data.append([ display(self, coauthors, a),
@@ -110,7 +111,7 @@ class Database:
 
     def get_average_authors_per_publication(self, av):
         header = ("Conference Paper", "Journal", "Book", "Book Chapter", "All Publications")
-
+        self.header_cache = header
         auth_per_pub = [[], [], [], []]
 
         for p in self.publications:
@@ -123,7 +124,7 @@ class Database:
 
     def get_average_publications_per_author(self, av):
         header = ("Conference Paper", "Journal", "Book", "Book Chapter", "All Publications")
-
+        self.header_cache = header
         pub_per_auth = np.zeros((len(self.authors), 4))
 
         for p in self.publications:
@@ -138,7 +139,7 @@ class Database:
     def get_average_publications_in_a_year(self, av):
         header = ("Conference Paper",
             "Journal", "Book", "Book Chapter", "All Publications")
-
+        self.header_cache = header
         ystats = np.zeros((int(self.max_year) - int(self.min_year) + 1, 4))
 
         for p in self.publications:
@@ -152,7 +153,7 @@ class Database:
     def get_average_authors_in_a_year(self, av):
         header = ("Conference Paper",
             "Journal", "Book", "Book Chapter", "All Publications")
-
+        self.header_cache = header
         yauth = [ [set(), set(), set(), set(), set()] for _ in range(int(self.min_year), int(self.max_year) + 1) ]
 
         for p in self.publications:
@@ -170,7 +171,7 @@ class Database:
     def get_publication_summary_average(self, av):
         header = ("Details", "Conference Paper",
             "Journal", "Book", "Book Chapter", "All Publications")
-
+        self.header_cache = header
         pub_per_auth = np.zeros((len(self.authors), 4))
         auth_per_pub = [[], [], [], []]
 
@@ -194,7 +195,8 @@ class Database:
     def get_publication_summary(self):
         header = ("Details", "Conference Paper",
             "Journal", "Book", "Book Chapter", "Total")
-
+        self.header_cache = header
+        
         plist = [0, 0, 0, 0]
         alist = [set(), set(), set(), set()]
 
@@ -208,6 +210,9 @@ class Database:
         data = [
             ["Number of publications"] + plist + [sum(plist)],
             ["Number of authors"] + [ len(a) for a in alist ] + [len(ua)] ]
+        
+        self.cache = data
+        
         return (header, data)
 
     def sortPublicationsByYear(self):
@@ -228,6 +233,8 @@ class Database:
         header = ("Author", "Number of conference papers",
             "Number of journals", "Number of books",
             "Number of book chapers", "All publications")
+
+        self.header_cache = header
 
         astats = [ [[], [], [], []] for _ in range(len(self.authors)) ]
         for p in self.publications:
@@ -253,6 +260,8 @@ class Database:
             "Number of journals", "Number of books",
             "Number of book chapers", "Total")
 
+        self.header_cache = header
+
         astats = [ [0, 0, 0, 0] for _ in range(len(self.authors)) ]
         for p in self.publications:
             for a in p.authors:
@@ -260,12 +269,25 @@ class Database:
 
         data = [ [self.authors[i].name] + astats[i] + [sum(astats[i])]
             for i in range(len(astats)) ]
+        self.cache = data
+        self.sorted_cache = [ False for i in range(0, len(data))]
         return (header, data)
 
+    
+    def sort_cache_generic(self, field):
+        try:
+            sorted_pubs = sorted(self.cache, key=lambda pub: int(pub[field]))
+        except:
+            sorted_pubs = sorted(self.cache, key=lambda pub: pub[field])
+        self.cache = sorted_pubs
+        return self.cache
+    
     def get_average_authors_per_publication_by_year(self, av):
         header = ("Year", "Conference papers",
             "Journals", "Books",
             "Book chapers", "All publications")
+
+        self.header_cache = header
 
         ystats = {}
         for p in self.publications:
@@ -281,12 +303,15 @@ class Database:
             + [ func(L) for L in ystats[y] ]
             + [ func(list(itertools.chain(*ystats[y]))) ]
             for y in ystats ]
+        self.cache = data
         return (header, data)
 
     def get_publications_by_year(self):
         header = ("Year", "Number of conference papers",
             "Number of journals", "Number of books",
             "Number of book chapers", "Total")
+
+        self.header_cache = header
 
         ystats = {}
         for p in self.publications:
@@ -297,13 +322,15 @@ class Database:
                 ystats[p.year][p.pub_type] += 1
 
         data = [ [y] + ystats[y] + [sum(ystats[y])] for y in ystats ]
-        
+        self.cache = data
         return (header, data)
 
     def get_average_publications_per_author_by_year(self, av):
         header = ("Year", "Conference papers",
             "Journals", "Books",
             "Book chapers", "All publications")
+
+        self.header_cache = header
 
         ystats = {}
         for p in self.publications:
@@ -321,12 +348,15 @@ class Database:
             + [ func(ystats[y][:, i]) for i in np.arange(4) ]
             + [ func(ystats[y].sum(axis=1)) ]
             for y in ystats ]
+        self.cache = data
         return (header, data)
 
     def get_author_totals_by_year(self):
         header = ("Year", "Number of conference papers",
             "Number of journals", "Number of books",
             "Number of book chapers", "Total")
+
+        self.header_cache = header
 
         ystats = {}
         for p in self.publications:
@@ -339,13 +369,17 @@ class Database:
                 s.add(a)
         data = [ [y] + [len(s) for s in ystats[y]] + [len(ystats[y][0] | ystats[y][1] | ystats[y][2] | ystats[y][3])]
             for y in ystats ]
+        self.cache = data
         return (header, data)
 
     def get_publication_list(self):
         header = ("Type", "Title",
             "Year", "Authors")
-        data = utils.table_from_pubs(self.publications)
         
+        self.header_cache = header
+        
+        data = utils.table_from_pubs(self.publications)
+        self.cache = data
         return (header, data)
 
     def add_publication(self, pub_type, title, year, authors):
@@ -393,6 +427,7 @@ class Database:
     def get_coauthor_details(self, name):
         author_id = self.author_idx[name]
         data = self._get_collaborations(author_id, True)
+        
         return [ (self.authors[key].name, data[key])
             for key in data ]
 
@@ -441,7 +476,6 @@ class Database:
                 counter +=1
         return counter
 
-    
     def get_author_stats(self, auth_name):
         pub_list = self.search_by_author(auth_name)
         conf_counter = 0

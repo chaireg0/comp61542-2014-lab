@@ -23,7 +23,7 @@ class Test(unittest.TestCase):
         comp61542.app.config['DATABASE'] = db
         
         self.app = comp61542.app.test_client()
-
+        self.db = db
 
     def testSortByFirstAuthor(self):
         
@@ -127,6 +127,84 @@ class Test(unittest.TestCase):
                          ["Conference Paper", "Hello1", "1999", "Author1, Author4"]], pub_table)
         
     
+    def test_that_database_caches_publications_after_a_get_pubs_by_author_call(self):
+        self.db.get_publications_by_author()
+        self.assertIsNotNone(self.db.cache)
+    
+    def test_that_database_sets_sorted_boolean_array_value_for_pubs_by_author_as_false(self):
+        self.db.get_publications_by_author()
+        self.assertIsNotNone(self.db.sorted_cache)
+        
+        for value in self.db.sorted_cache:
+            self.assertFalse(value)
+            
+    def test_that_pubs_by_author_can_be_sorted_using_first_field(self):
+        self.db.get_publications_by_author()
+        self.db.sort_cache_generic(0)
+        for index in range(0, len(self.db.cache) - 1):
+            self.assertTrue(self.db.cache[index] <= self.db.cache[index + 1],\
+                            self.db.cache[index][0] + "<=" + self.db.cache[index + 1][0])
+
+    def test_that_pubs_by_author_can_be_sorted_using_n_field(self):
+        self.db.get_publications_by_author()
+        for i in range(0, len(self.db.cache[0])):
+            self.db.sort_cache_generic(i)
+            for index in range(0, len(self.db.cache) - 1):
+                valueA = self.db.cache[index][i]
+                valueB = self.db.cache[index + 1][i]
+                try:
+                    valueA = int(valueA)
+                    valueB = int(valueB)
+                except:
+                    print "Warning:", valueA, valueB
+                    pass
+                
+                self.assertTrue(valueA <= valueB,\
+                            str(self.db.cache[index][i]) + "<="\
+                             + str(self.db.cache[index + 1][i]))
+            
+    
+    def generic_sort(self, method):
+        method()
+        for i in range(0, len(self.db.cache[0])):
+            self.db.sort_cache_generic(i)
+            for index in range(0, len(self.db.cache) - 1):
+                valueA = self.db.cache[index][i]
+                valueB = self.db.cache[index + 1][i]
+                try:
+                    valueA = int(valueA)
+                    valueB = int(valueB)
+                except:
+                    print "Warning:", valueA, valueB
+                    pass
+                
+                self.assertTrue(valueA <= valueB,\
+                            str(self.db.cache[index][i]) + "<="\
+                             + str(self.db.cache[index + 1][i]))
+        
+        
+    def test_that_database_caches_publication_summary(self):
+        self.db.get_publication_summary()
+        self.assertIsNotNone(self.db.cache)
+        
+    
+    def test_generic_sort_for_publication_summary(self):
+        self.generic_sort(self.db.get_publication_summary)
+    
+    def test_that_database_caches_publication_by_year(self):
+        self.db.get_publications_by_year()
+        self.assertIsNotNone(self.db.cache)
+
+    def test_generic_sort_for_publications_by_year(self):
+        self.generic_sort(self.db.get_publications_by_year)
+        
+    def test_that_database_caches_totals_publications_per_author(self):
+        self.db.get_author_totals_by_year()
+        self.assertIsNotNone(self.db.cache)
+        
+    def test_generic_sort_for_average_publications_per_author(self):
+        self.generic_sort(self.db.get_author_totals_by_year)
+        
     
     
 if __name__ == "__main__":
