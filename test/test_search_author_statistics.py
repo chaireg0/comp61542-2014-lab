@@ -12,9 +12,9 @@ class TestSearchAuthorStatistics(unittest.TestCase):
         auth4 = Author("Author4")
         
         
-        self.pub1 = Publication("", "", "", [0, 1, 2])
-        self.pub2 = Publication("", "", "", [3, 0, 2])
-        self.pub3 = Publication("", "", "", [0])
+        self.pub1 = Publication(0, "Pub1", "2002", [0, 1, 2])
+        self.pub2 = Publication(3, "Pub2", "1999", [3, 0, 2])
+        self.pub3 = Publication(1, "Pub3", "2012", [0])
         
         db = database.Database()
         db.authors = [auth1, auth2, auth3, auth4]
@@ -46,7 +46,12 @@ class TestSearchAuthorStatistics(unittest.TestCase):
         n = self.db.get_times_as_last("Author3")
         self.assertEqual(n, 2) 
 
+    def test_search_function_for_author(self):
+        author_stats = self.db.get_author_stats("Author1")
+        self.assertEqual(author_stats, [1, 1, 0, 1, 2, 1, 3, 3])
         
+        author_stats = self.db.get_author_stats("Author2")
+        self.assertEqual(author_stats, [1, 0, 0, 0, 0, 0, 1, 2])    
          
                 
         

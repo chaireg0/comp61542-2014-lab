@@ -439,13 +439,41 @@ class Database:
             if p.authors[-1] == author_index:
                 counter +=1
         return counter
-    
-    
-    
-    
-    
-    
 
+    
+    def get_author_stats(self, auth_name):
+        pub_list = self.search_by_author(auth_name)
+        conf_counter = 0
+        journal_counter = 0
+        book_counter = 0
+        bchapter_counter = 0
+        for p in pub_list:
+            if p.pub_type == 0:
+                conf_counter += 1
+            elif p.pub_type == 1:
+                journal_counter += 1
+            elif p.pub_type == 2:
+                book_counter += 1
+            elif p.pub_type == 3:
+                bchapter_counter += 1
+        coauthors = []
+        '''
+        for author in self.authors:
+            if author.name == auth_name:
+                given_author = author
+        '''
+        authors = [ author.name for author in self.authors ]
+        author_index = authors.index(auth_name)
+        for p in pub_list:
+            for a in p.authors:
+                if a != author_index:
+                    if a not in coauthors:
+                        coauthors.append(a)
+        first_counter = self.get_times_as_first(auth_name)
+        last_counter = self.get_times_as_last(auth_name)
+        return [conf_counter, journal_counter, book_counter, bchapter_counter, 
+                first_counter, last_counter, len(pub_list), len(coauthors)]
+                
 class DocumentHandler(handler.ContentHandler):
     TITLE_TAGS = [ "sub", "sup", "i", "tt", "ref" ]
     PUB_TYPE = {
