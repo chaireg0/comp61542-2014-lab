@@ -44,12 +44,21 @@ class Stat:
     MODE = 2
 
 class Database:
+
+    def __init__(self):
+        
+        self.sorted_by_first_author = False
+        self.sorted_by_year = False
+        self.sorted_by_title = False
+        self.sorted_by_type = False
+        
     def read(self, filename):
         self.publications = []
         self.authors = []
         self.author_idx = {}
         self.min_year = None
         self.max_year = None
+
 
         handler = DocumentHandler(self)
         parser = make_parser()
@@ -202,10 +211,17 @@ class Database:
         return (header, data)
 
     def sortPublicationsByYear(self):
-        return sorted(self.publications, key=lambda pub: pub.year) # sort by publication's year
+        self.sorted_by_year = not self.sorted_by_year
+        return sorted(self.publications, key=lambda pub: pub.year, reverse=not self.sorted_by_year) # sort by publication's year
 
     def sortPublicationsByTitle(self):
-        return sorted(self.publications, key=lambda pub: pub.title) # sort by publication's title
+        self.sorted_by_title = not self.sorted_by_title
+        return sorted(self.publications, key=lambda pub: pub.title, reverse=not self.sorted_by_title) # sort by publication's title
+    
+    def sortPublicationsByType(self):
+        self.sorted_by_type = not self.sorted_by_type
+        return sorted(self.publications, key=lambda pub: PublicationType[pub.pub_type],\
+                      reverse=not self.sorted_by_type) # sort by publication's type
 
 
     def get_average_authors_per_publication_by_author(self, av):
@@ -227,7 +243,9 @@ class Database:
         return (header, data)
 
     def sortPublicationsByFirstAuthors(self):
-        return sorted(self.publications, key=lambda pub: self.authors[pub.authors[0]].name) # sort by author's name
+        self.sorted_by_first_author = not self.sorted_by_first_author
+        return sorted(self.publications, key=lambda pub: self.authors[pub.authors[0]].name,\
+                       reverse=not self.sorted_by_first_author) # sort by author's name
 
 
     def get_publications_by_author(self):

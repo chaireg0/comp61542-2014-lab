@@ -46,6 +46,8 @@ class Test(unittest.TestCase):
         
         self.assertEquals([pub3, pub1, pub2], sortedpublist)
     
+        sortedpublist = db.sortPublicationsByFirstAuthors()
+        self.assertEqual([pub2, pub1, pub3], sortedpublist) #next call should sort in descending order
         
     def testSortByYear(self):
         pub1 = Publication("", "", 2008, "")
@@ -60,6 +62,9 @@ class Test(unittest.TestCase):
         
         self.assertEquals([pub2, pub3, pub1], sortedpublist,\
                            "pub2 should come first, then pub3, then pub1. However, the result is " + str(sortedpublist))
+        
+        sortedpublist = db.sortPublicationsByYear()
+        self.assertEquals([pub1, pub3, pub2], sortedpublist)
 
     def testSortByTitle(self):
         pub1 = Publication("", "Putin's love with Tzar", "", "")
@@ -75,6 +80,26 @@ class Test(unittest.TestCase):
         self.assertEquals([pub2, pub3, pub1], sortedpublist,\
                            "pub2 should come first, then pub3, then pub1. However, the result is " + str(sortedpublist))
     
+        sortedpublist = db.sortPublicationsByTitle()
+        self.assertEquals([pub1, pub3, pub2], sortedpublist)
+    
+    def testSortByType(self):
+        pub1 = Publication(0, "", "", "")
+        pub2 = Publication(1, "", "", "")
+        pub3 = Publication(2, "", "", "")
+        
+        publist = [pub1, pub2, pub3]
+        
+        db = comp61542.app.config["DATABASE"]
+        db.publications = publist
+        sortedpublist = db.sortPublicationsByType()
+        
+        self.assertEquals([pub3, pub1, pub2], sortedpublist)
+    
+        sortedpublist = db.sortPublicationsByType()
+        self.assertEqual([pub2, pub1, pub3], sortedpublist)
+        
+        
     def test_pub_to_textlist(self):
         
         pub1 = Publication(0, "Hello2", 2008, [1])
