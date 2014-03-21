@@ -82,3 +82,29 @@ class TestSearchAuthorStatistics(unittest.TestCase):
         self.assertEqual(("Name", "Times appeared first", "Times appeared last"),\
                            table_for_html_generation[0])
         self.assertEquals([["Author1", "2", "1"]], table_for_html_generation[1])
+        
+    def test_table_for_author_stats(self):
+        author_stats = self.db.get_author_stats("Author1")
+        author = {"name": "Author1", "Conference": author_stats[0], "Journal": author_stats[1], "Book": author_stats[2],
+                  "Book Chapter": author_stats[3], "first": author_stats[4], "last": author_stats[5],
+                  "Total": author_stats[6], "coauthors": author_stats[7]}
+        
+        table_for_html_generation = utils.author_all_stats(author)
+        
+        self.assertEquals(["Author1", "1", "1", "0", "1", "2", "1", "3", "3"], table_for_html_generation)
+        
+    def test_table_for_author_stats_with_header(self):
+        author1_stats = self.db.get_author_stats("Author1")
+        author2_stats = self.db.get_author_stats("Author2")
+        author1 = {"name": "Author1", "Conference": author1_stats[0], "Journal": author1_stats[1], "Book": author1_stats[2],
+                  "Book Chapter": author1_stats[3], "first": author1_stats[4], "last": author1_stats[5],
+                  "Total": author1_stats[6], "coauthors": author1_stats[7]}
+        author2 = {"name": "Author2", "Conference": author2_stats[0], "Journal": author2_stats[1], "Book": author2_stats[2],
+                  "Book Chapter": author2_stats[3], "first": author2_stats[4], "last": author2_stats[5],
+                  "Total": author2_stats[6], "coauthors": author2_stats[7]}
+        table_for_html_generation = utils.author_all_stats_table(author1, author2)
+        
+        self.assertEqual(("Name", "Conference Papers", "Journal", "Book", "Book Chapters", "No. of first author", "No. of last author",
+                          "Total Publications", "Co-authors"), table_for_html_generation[0])
+        self.assertEquals([["Author1", "1", "1", "0", "1", "2", "1", "3", "3"], ["Author2", "1", "0", "0", "0", "0", "0", "1", "2"]],
+                           table_for_html_generation[1])
