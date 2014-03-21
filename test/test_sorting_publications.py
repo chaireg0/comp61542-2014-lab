@@ -126,16 +126,7 @@ class Test(unittest.TestCase):
                        ["Conference Paper", "Hello0", "1993", "Author1, Author2, Author3"],\
                          ["Conference Paper", "Hello1", "1999", "Author1, Author4"]], pub_table)
         
-    def test_html_generation(self):
-        comp61542.app.config['TESTING'] = True
-        
-        db = comp61542.app.config['DATABASE']
-        
-        self.app = comp61542.app.test_client()
-        
-        html = db.get_publication_list()
-        
-        self.assertTrue(len(html) > 0)
+    
     
     
 if __name__ == "__main__":
