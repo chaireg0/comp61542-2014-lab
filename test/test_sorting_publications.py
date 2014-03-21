@@ -206,7 +206,15 @@ class Test(unittest.TestCase):
         self.generic_sort(self.db.get_author_totals_by_year)
         
     
-    
+    def test_that_sorting_parameters_are_updated_after_field_sort(self):
+        self.generic_sort(self.db.get_publication_summary)
+        for field_sort in self.db.sorted_cache:
+            self.assertTrue(field_sort)
+        self.generic_sort(self.db.get_author_totals_by_year)
+        for field_sort in self.db.sorted_cache:
+            self.assertTrue(field_sort)
+        
+        
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()
