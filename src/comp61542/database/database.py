@@ -106,7 +106,7 @@ class Database:
             data.append([ display(self, coauthors, a),
                 ", ".join([
                     display(self, coauthors, ca) for ca in coauthors[a] ]) ])
-
+            
         return (header, data)
 
     def get_average_authors_per_publication(self, av):
@@ -120,6 +120,9 @@ class Database:
         func = Stat.FUNC[av]
 
         data = [ func(auth_per_pub[i]) for i in np.arange(4) ] + [ func(list(itertools.chain(*auth_per_pub))) ]
+        self.cache = data
+        
+        self.sorted_cache = [ False for i in range(0, len(header))]
         return (header, data)
 
     def get_average_publications_per_author(self, av):
@@ -134,6 +137,9 @@ class Database:
         func = Stat.FUNC[av]
 
         data = [ func(pub_per_auth[:, i]) for i in np.arange(4) ] + [ func(pub_per_auth.sum(axis=1)) ]
+        self.cache = data
+        
+        self.sorted_cache = [ False for i in range(0, len(header))]
         return (header, data)
 
     def get_average_publications_in_a_year(self, av):
@@ -146,8 +152,10 @@ class Database:
             ystats[p.year - self.min_year][p.pub_type] += 1
 
         func = Stat.FUNC[av]
-
+        
+        self.sorted_cache = [ False for i in range(0, len(header))]
         data = [ func(ystats[:, i]) for i in np.arange(4) ] + [ func(ystats.sum(axis=1)) ]
+        self.cache = data
         return (header, data)
 
     def get_average_authors_in_a_year(self, av):
@@ -166,6 +174,8 @@ class Database:
         func = Stat.FUNC[av]
 
         data = [ func(ystats[:, i]) for i in np.arange(5) ]
+        self.cache = data
+        self.sorted_cache = [ False for i in range(0, len(header))]
         return (header, data)
 
     def get_publication_summary_average(self, av):
@@ -190,6 +200,9 @@ class Database:
             [name + " publications per author"]
                 + [ func(pub_per_auth[:, i]) for i in np.arange(4) ]
                 + [ func(pub_per_auth.sum(axis=1)) ] ]
+        
+        self.cache = data
+        self.sorted_cache = [ False for i in range(0, len(header))]
         return (header, data)
 
     def get_publication_summary(self):
@@ -213,6 +226,7 @@ class Database:
         
         self.cache = data
         
+        self.sorted_cache = [ False for i in range(0, len(header))]
         return (header, data)
 
     def sortPublicationsByYear(self):
@@ -270,16 +284,21 @@ class Database:
         data = [ [self.authors[i].name] + astats[i] + [sum(astats[i])]
             for i in range(len(astats)) ]
         self.cache = data
-        self.sorted_cache = [ False for i in range(0, len(data))]
+        self.sorted_cache = [ False for i in range(0, len(header))]
         return (header, data)
 
     
     def sort_cache_generic(self, field):
         try:
-            sorted_pubs = sorted(self.cache, key=lambda pub: int(pub[field]))
+            sorted_pubs = sorted(self.cache, key=lambda pub: int(pub[field]), reverse = self.sorted_cache[field])
         except:
-            sorted_pubs = sorted(self.cache, key=lambda pub: pub[field])
+            sorted_pubs = sorted(self.cache, key=lambda pub: pub[field], reverse = self.sorted_cache[field])
         self.cache = sorted_pubs
+        
+        self.sorted_cache[field] = not self.sorted_cache[field]
+        
+        
+        
         return self.cache
     
     def get_average_authors_per_publication_by_year(self, av):
@@ -304,6 +323,8 @@ class Database:
             + [ func(list(itertools.chain(*ystats[y]))) ]
             for y in ystats ]
         self.cache = data
+        
+        self.sorted_cache = [ False for i in range(0, len(header))]
         return (header, data)
 
     def get_publications_by_year(self):
@@ -323,6 +344,8 @@ class Database:
 
         data = [ [y] + ystats[y] + [sum(ystats[y])] for y in ystats ]
         self.cache = data
+        
+        self.sorted_cache = [ False for i in range(0, len(header))]
         return (header, data)
 
     def get_average_publications_per_author_by_year(self, av):
@@ -349,6 +372,8 @@ class Database:
             + [ func(ystats[y].sum(axis=1)) ]
             for y in ystats ]
         self.cache = data
+        
+        self.sorted_cache = [ False for i in range(0, len(header))]
         return (header, data)
 
     def get_author_totals_by_year(self):
@@ -370,6 +395,8 @@ class Database:
         data = [ [y] + [len(s) for s in ystats[y]] + [len(ystats[y][0] | ystats[y][1] | ystats[y][2] | ystats[y][3])]
             for y in ystats ]
         self.cache = data
+        
+        self.sorted_cache = [ False for i in range(0, len(header))]
         return (header, data)
 
     def get_publication_list(self):
@@ -380,6 +407,8 @@ class Database:
         
         data = utils.table_from_pubs(self.publications)
         self.cache = data
+        
+        self.sorted_cache = [ False for i in range(0, len(header))]
         return (header, data)
 
     def add_publication(self, pub_type, title, year, authors):
