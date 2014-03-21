@@ -139,4 +139,15 @@ def displayPublications(sortby):
     args["data"] = db.get_publication_list()
     
     return render_template('publications.html', args=args)
+
+@app.route("/author/<authorname>")
+def displayAuthorFirstLastStats(authorname):
+    dataset = app.config['DATASET']
+    db = app.config['DATABASE']
+    args = {"dataset":dataset, "id":authorname}
+    first = db.get_times_as_first(authorname)
+    last = db.get_times_as_last(authorname)
+    author = {'name':authorname, 'first':first, 'last':last}
     
+    args['data'] = utils.author_stats_fist_last_table(author)
+    return render_template('author_first_last.html', args=args)

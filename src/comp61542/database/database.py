@@ -297,6 +297,7 @@ class Database:
                 ystats[p.year][p.pub_type] += 1
 
         data = [ [y] + ystats[y] + [sum(ystats[y])] for y in ystats ]
+        
         return (header, data)
 
     def get_average_publications_per_author_by_year(self, av):
