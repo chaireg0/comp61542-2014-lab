@@ -101,6 +101,14 @@ class Test(unittest.TestCase):
                        ["Conference Paper", "Hello0", "1993", "Author1, Author2, Author3"],\
                          ["Conference Paper", "Hello1", "1999", "Author1, Author4"]], pub_table)
         
+    def search_function(self):
+        pub1 = Publication(0, "Hello2", 2008, [1])
+        pub2 = Publication(0, "Hello0", 1993, [1, 2, 3])
+        pub3 = Publication(0, "Hello1", 1999, [1, 4])
+        
+        
+                
+        
     def test_html_generation(self):
         comp61542.app.config['TESTING'] = True
         
