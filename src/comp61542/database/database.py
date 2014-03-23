@@ -297,8 +297,6 @@ class Database:
         
         self.sorted_cache[field] = not self.sorted_cache[field]
         
-        
-        
         return self.cache
     
     def get_average_authors_per_publication_by_year(self, av):

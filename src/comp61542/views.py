@@ -18,6 +18,7 @@ def showAverages():
     db = app.config['DATABASE']
     args = {"dataset":dataset, "id":"averages"}
     args['title'] = "Averaged Data"
+    db.title_cache = args['title']
     tables = []
     headers = ["Average", "Conference Paper", "Journal", "Book", "Book Chapter", "All Publications"]
     averages = [ database.Stat.MEAN, database.Stat.MEDIAN, database.Stat.MODE ]
@@ -64,7 +65,8 @@ def showCoAuthors():
     PUB_TYPES = ["Conference Papers", "Journals", "Books", "Book Chapters", "All Publications"]
     args = {"dataset":dataset, "id":"coauthors"}
     args["title"] = "Co-Authors"
-
+    
+    db.title_cache = args['title']
     start_year = db.min_year
     if "start_year" in request.args:
         start_year = int(request.args.get("start_year"))
@@ -103,7 +105,7 @@ def showPublicationSummary(status):
     if (status == "publication_summary"):
         args["title"] = "Publication Summary"
         args["data"] = db.get_publication_summary()
-
+    
     if (status == "publication_author"):
         args["title"] = "Author Publication"
         args["data"] = db.get_publications_by_author()
@@ -115,7 +117,8 @@ def showPublicationSummary(status):
     if (status == "author_year"):
         args["title"] = "Author by Year"
         args["data"] = db.get_author_totals_by_year()
-
+    db.title_cache = args['title']
+    
     return render_template('statistics_details.html', args=args)
 
 @app.route("/publications/<sortby>")
@@ -124,11 +127,11 @@ def displayPublications(sortby):
     db = app.config['DATABASE']
     args = {"dataset":dataset, "id":sortby}
     sortby = sortby.lower()
+    args["title"] = "Publications"  
+        
     if (sortby == "year"):
-        args["title"] = "Publications"  
         db.publications = db.sortPublicationsByYear()
     elif (sortby == "authors"):
-        args["title"] = "Publications"
         db.publications = db.sortPublicationsByFirstAuthors()
     elif (sortby == "title"):
         db.publications = db.sortPublicationsByTitle()
@@ -136,22 +139,30 @@ def displayPublications(sortby):
         db.publications = db.sortPublicationsByType()
     else:
         db.publications = db.sortPublicationsByTitle()
+        
     args["data"] = db.get_publication_list()
+    db.title_cache = args['title']
     
     return render_template('publications.html', args=args)
 
-@app.route("/author/<authorname>")
-def displayAuthorFirstLastStats(authorname):
+@app.route("/author/firstlast")
+def displayAuthorFirstLastStats():
     dataset = app.config['DATASET']
     db = app.config['DATABASE']
-    args = {"dataset":dataset, "id":authorname}
-    first = db.get_times_as_first(authorname)
-    last = db.get_times_as_last(authorname)
-    author = {'name':authorname, 'first':first, 'last':last}
+    try:
+        authorname = request.args.get('fname')
+        args = {"dataset":dataset, "id":authorname}
+        first = db.get_times_as_first(authorname)
+        last = db.get_times_as_last(authorname)
+        author = {'name':authorname, 'first':first, 'last':last}
+        args['title'] = "Author First/Last stats"
+        db.title_cache = args['title']
+        
+        args['data'] = utils.author_stats_fist_last_table(author)
+        return render_template('author_first_last.html', args=args)
+    except:
+        return firstlast()
     
-    args['data'] = utils.author_stats_fist_last_table(author)
-    return render_template('author_first_last.html', args=args)
-
 @app.route("/stats/<field>")
 def sortByField(field):
     db = app.config['DATABASE']
@@ -160,16 +171,47 @@ def sortByField(field):
     args = {"dataset":dataset, "id":field}
     db.sort_cache_generic(field)
     args['data'] = (db.header_cache, db.cache)
+    try:
+        args['title'] = db.title_cache
+    except:
+        pass #no title cached
     return render_template('statistics_details.html', args = args)
     
-@app.route("/author/search/<authorname>")
-def displayAuthorStats(authorname):
+@app.route("/authors/search/author")
+def displayAuthorStats():
     dataset = app.config['DATASET']
     db = app.config['DATABASE']
+    authorname = request.args.get('fname')
+    
     args = {"dataset":dataset, "id":authorname}
-    author_stats = db.get_author_stats(authorname)
-    author = {'name':authorname, "Conference": author_stats[0], "Journal": author_stats[1], "Book": author_stats[2],
-                  "Book Chapter": author_stats[3], "first": author_stats[4], "last": author_stats[5],
-                  "Total": author_stats[6], "coauthors": author_stats[7]}
-    args['data'] = utils.author_all_stats_table(author)
-    return render_template('search_for_author.html', args=args)
+    try:
+        author_stats = db.get_author_stats(authorname)
+        author = {'name':authorname, "Conference": author_stats[0], "Journal": author_stats[1], "Book": author_stats[2],
+                      "Book Chapter": author_stats[3], "first": author_stats[4], "last": author_stats[5],
+                      "Total": author_stats[6], "coauthors": author_stats[7]}
+        args['data'] = utils.author_all_stats_table(author)
+        args['title'] = str(authorname)
+        db.title_cache = args['title']
+        return render_template('search_for_author.html', args=args)
+    except:
+        return searchPage()
+    
+@app.route('/authors/search')
+def searchPage():
+    dataset = app.config['DATASET']
+    db = app.config['DATABASE']
+    args = {"dataset":dataset, "id":'search'}
+    args['title'] = 'Search'
+    db.title_cache = args['title']
+    args['data'] = '/authors/search/author'
+    return render_template('search.html', args=args)
+
+@app.route("/author")
+def firstlast():
+    dataset = app.config['DATASET']
+    db = app.config['DATABASE']
+    args = {"dataset":dataset, "id":'search'}
+    args['title'] = 'Search'
+    db.title_cache = args['title']
+    args['data'] = '/author/firstlast'
+    return render_template('search.html', args=args)
