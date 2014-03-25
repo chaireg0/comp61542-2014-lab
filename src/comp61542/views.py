@@ -88,6 +88,7 @@ def showCoAuthors():
     args["start_year"] = start_year
     args["end_year"] = end_year
     args["pub_str"] = PUB_TYPES[pub_type]
+    db.args_cache = args
     db.title_cache = args['title']
     return render_template("coauthors.html", args=args)
 
@@ -181,35 +182,10 @@ def sortByField(field):
 @app.route("/stats/coauthors/<field>")
 def sortByCoauthorField(field):
     db = app.config['DATABASE']
-    dataset = app.config['DATASET']
     field = int(field)
-    args = {"dataset":dataset, "id":field}
     db.sort_cache_generic(field)
     
-    
-    PUB_TYPES = ["Conference Papers", "Journals", "Books", "Book Chapters", "All Publications"]
-    
-    start_year = db.min_year
-    if "start_year" in request.args:
-        start_year = int(request.args.get("start_year"))
-
-    end_year = db.max_year
-    if "end_year" in request.args:
-        end_year = int(request.args.get("end_year"))
-
-    pub_type = 4
-    if "pub_type" in request.args:
-        pub_type = int(request.args.get("pub_type"))
-
-    args["start_year"] = start_year
-    args["end_year"] = end_year
-    args["pub_type"] = pub_type
-    args["min_year"] = db.min_year
-    args["max_year"] = db.max_year
-    args["start_year"] = start_year
-    args["end_year"] = end_year
-    args["pub_str"] = PUB_TYPES[pub_type]
-        
+    args = db.args_cache    
     args['data'] = (db.header_cache, db.cache)
     try:
         args['title'] = db.title_cache
