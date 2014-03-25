@@ -24,11 +24,15 @@ Publication type:
 <table>
   <thead>
     <tr>
+    {% set counter = 0 %}
     {% for column in args.data[0] %}
-      <th>{{ column }}</th>
+      
+      <th><a href="/stats/{{ counter }}">{{ column }}</a></th>
+    {% set counter = counter+1 %}
     {% endfor %}
     </tr>
   </thead>
+
   <tbody>
   {% for row in args.data[1] %}
     <tr>
@@ -38,13 +42,6 @@ Publication type:
     </tr>
   {% endfor %}
   </tbody>
-  <tfoot>
-    <tr>
-    {% for column in args.data[0] %}
-      <th>{{ column }}</th>
-    {% endfor %}
-    </tr>
-  </tfoot>
 </table>
 
 <script>
