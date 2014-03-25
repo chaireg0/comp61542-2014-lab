@@ -88,6 +88,7 @@ def showCoAuthors():
     args["start_year"] = start_year
     args["end_year"] = end_year
     args["pub_str"] = PUB_TYPES[pub_type]
+    db.title_cache = args['title']
     return render_template("coauthors.html", args=args)
 
 @app.route("/")

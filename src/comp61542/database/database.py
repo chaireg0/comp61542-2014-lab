@@ -106,7 +106,9 @@ class Database:
             data.append([ display(self, coauthors, a),
                 ", ".join([
                     display(self, coauthors, ca) for ca in coauthors[a] ]) ])
-            
+        self.cache = data
+        self.header_cache = header
+        self.sorted_cache = [ False for i in range(0, len(header))]    
         return (header, data)
 
     def get_average_authors_per_publication(self, av):
