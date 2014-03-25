@@ -23,7 +23,7 @@ class Test(unittest.TestCase):
         comp61542.app.config['DATABASE'] = db
         
         self.app = comp61542.app.test_client()
-
+        self.db = db
 
     def testSortByFirstAuthor(self):
         
@@ -46,6 +46,8 @@ class Test(unittest.TestCase):
         
         self.assertEquals([pub3, pub1, pub2], sortedpublist)
     
+        sortedpublist = db.sortPublicationsByFirstAuthors()
+        self.assertEqual([pub2, pub1, pub3], sortedpublist) #next call should sort in descending order
         
     def testSortByYear(self):
         pub1 = Publication("", "", 2008, "")
@@ -60,6 +62,9 @@ class Test(unittest.TestCase):
         
         self.assertEquals([pub2, pub3, pub1], sortedpublist,\
                            "pub2 should come first, then pub3, then pub1. However, the result is " + str(sortedpublist))
+        
+        sortedpublist = db.sortPublicationsByYear()
+        self.assertEquals([pub1, pub3, pub2], sortedpublist)
 
     def testSortByTitle(self):
         pub1 = Publication("", "Putin's love with Tzar", "", "")
@@ -75,6 +80,26 @@ class Test(unittest.TestCase):
         self.assertEquals([pub2, pub3, pub1], sortedpublist,\
                            "pub2 should come first, then pub3, then pub1. However, the result is " + str(sortedpublist))
     
+        sortedpublist = db.sortPublicationsByTitle()
+        self.assertEquals([pub1, pub3, pub2], sortedpublist)
+    
+    def testSortByType(self):
+        pub1 = Publication(0, "", "", "")
+        pub2 = Publication(1, "", "", "")
+        pub3 = Publication(2, "", "", "")
+        
+        publist = [pub1, pub2, pub3]
+        
+        db = comp61542.app.config["DATABASE"]
+        db.publications = publist
+        sortedpublist = db.sortPublicationsByType()
+        
+        self.assertEquals([pub3, pub1, pub2], sortedpublist)
+    
+        sortedpublist = db.sortPublicationsByType()
+        self.assertEqual([pub2, pub1, pub3], sortedpublist)
+        
+        
     def test_pub_to_textlist(self):
         
         pub1 = Publication(0, "Hello2", 2008, [1])
@@ -101,26 +126,103 @@ class Test(unittest.TestCase):
                        ["Conference Paper", "Hello0", "1993", "Author1, Author2, Author3"],\
                          ["Conference Paper", "Hello1", "1999", "Author1, Author4"]], pub_table)
         
+
     def search_function(self):
         pub1 = Publication(0, "Hello2", 2008, [1])
         pub2 = Publication(0, "Hello0", 1993, [1, 2, 3])
         pub3 = Publication(0, "Hello1", 1999, [1, 4])
         
         
+    
+    def test_that_database_caches_publications_after_a_get_pubs_by_author_call(self):
+        self.db.get_publications_by_author()
+        self.assertIsNotNone(self.db.cache)
+    
+    def test_that_database_sets_sorted_boolean_array_value_for_pubs_by_author_as_false(self):
+        self.db.get_publications_by_author()
+        self.assertIsNotNone(self.db.sorted_cache)
+
+        
+        for value in self.db.sorted_cache:
+            self.assertFalse(value)
+            
+    def test_that_pubs_by_author_can_be_sorted_using_first_field(self):
+        self.db.get_publications_by_author()
+        self.db.sort_cache_generic(0)
+        for index in range(0, len(self.db.cache) - 1):
+            self.assertTrue(self.db.cache[index] <= self.db.cache[index + 1],\
+                            self.db.cache[index][0] + "<=" + self.db.cache[index + 1][0])
+
+    def test_that_pubs_by_author_can_be_sorted_using_n_field(self):
+        self.db.get_publications_by_author()
+        for i in range(0, len(self.db.cache[0])):
+            self.db.sort_cache_generic(i)
+            for index in range(0, len(self.db.cache) - 1):
+                valueA = self.db.cache[index][i]
+                valueB = self.db.cache[index + 1][i]
+                try:
+                    valueA = int(valueA)
+                    valueB = int(valueB)
+                except:
+                    print "Warning:", valueA, valueB
+                    pass
                 
-        
-    def test_html_generation(self):
-        comp61542.app.config['TESTING'] = True
-        
-        db = comp61542.app.config['DATABASE']
-        
-        self.app = comp61542.app.test_client()
-        
-        html = db.get_publication_list()
-        
-        self.assertTrue(len(html) > 0)
+                self.assertTrue(valueA <= valueB,\
+                            str(self.db.cache[index][i]) + "<="\
+                             + str(self.db.cache[index + 1][i]))
+            
     
+    def generic_sort(self, method):
+        method()
+        for i in range(0, len(self.db.cache[0])):
+            self.db.sort_cache_generic(i)
+            for index in range(0, len(self.db.cache) - 1):
+                valueA = self.db.cache[index][i]
+                valueB = self.db.cache[index + 1][i]
+                try:
+                    valueA = int(valueA)
+                    valueB = int(valueB)
+                except:
+                    print "Warning:", valueA, valueB
+                    pass
+                
+                self.assertTrue(valueA <= valueB,\
+                            str(self.db.cache[index][i]) + "<="\
+                             + str(self.db.cache[index + 1][i]))
+        
+        
+    def test_that_database_caches_publication_summary(self):
+        self.db.get_publication_summary()
+        self.assertIsNotNone(self.db.cache)
+        
     
+    def test_generic_sort_for_publication_summary(self):
+        self.generic_sort(self.db.get_publication_summary)
+    
+    def test_that_database_caches_publication_by_year(self):
+        self.db.get_publications_by_year()
+        self.assertIsNotNone(self.db.cache)
+
+    def test_generic_sort_for_publications_by_year(self):
+        self.generic_sort(self.db.get_publications_by_year)
+        
+    def test_that_database_caches_totals_publications_per_author(self):
+        self.db.get_author_totals_by_year()
+        self.assertIsNotNone(self.db.cache)
+        
+    def test_generic_sort_for_average_publications_per_author(self):
+        self.generic_sort(self.db.get_author_totals_by_year)
+        
+    
+    def test_that_sorting_parameters_are_updated_after_field_sort(self):
+        self.generic_sort(self.db.get_publication_summary)
+        for field_sort in self.db.sorted_cache:
+            self.assertTrue(field_sort)
+        self.generic_sort(self.db.get_author_totals_by_year)
+        for field_sort in self.db.sorted_cache:
+            self.assertTrue(field_sort)
+        
+        
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()

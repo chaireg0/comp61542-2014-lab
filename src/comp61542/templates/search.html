@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}{{ args.title }}{% endblock %}
+{% block content %}
+<h1>{{ args.title }}</h1>
+
+<form name="input" action="{{ args.data }}" method="get" data-ajax="false" onSubmit="validateForm(this)">
+Author name: <input type="text" name="fname"><br>
+<input type="submit" value="Submit">
+</form>
+{% endblock %}

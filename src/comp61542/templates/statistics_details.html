@@ -7,8 +7,11 @@
 <table>
   <thead>
     <tr>
+    {% set counter = 0 %}
     {% for column in args.data[0] %}
-      <th>{{ column }}</th>
+      
+      <th><a href="/stats/{{ counter }}">{{ column }}</a></th>
+    {% set counter = counter+1 %}
     {% endfor %}
     </tr>
   </thead>
