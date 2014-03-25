@@ -129,11 +129,11 @@ class Test(unittest.TestCase):
     
     def test_that_database_caches_publications_after_a_get_pubs_by_author_call(self):
         self.db.get_publications_by_author()
-        self.assertIsNotNone(self.db.cache)
+        self.assertFalse(self.db.cache == None)
     
     def test_that_database_sets_sorted_boolean_array_value_for_pubs_by_author_as_false(self):
         self.db.get_publications_by_author()
-        self.assertIsNotNone(self.db.sorted_cache)
+        self.assertFalse(self.db.sorted_cache == None)
         
         for value in self.db.sorted_cache:
             self.assertFalse(value)
@@ -156,7 +156,7 @@ class Test(unittest.TestCase):
                     valueA = int(valueA)
                     valueB = int(valueB)
                 except:
-                    print "Warning:", valueA, valueB
+                    print("Warning:", valueA, valueB)
                     pass
                 
                 self.assertTrue(valueA <= valueB,\
@@ -185,7 +185,7 @@ class Test(unittest.TestCase):
         
     def test_that_database_caches_publication_summary(self):
         self.db.get_publication_summary()
-        self.assertIsNotNone(self.db.cache)
+        self.assertFalse(self.db.cache == None)
         
     
     def test_generic_sort_for_publication_summary(self):
@@ -193,14 +193,14 @@ class Test(unittest.TestCase):
     
     def test_that_database_caches_publication_by_year(self):
         self.db.get_publications_by_year()
-        self.assertIsNotNone(self.db.cache)
+        self.assertFalse(self.db.cache==None)
 
     def test_generic_sort_for_publications_by_year(self):
         self.generic_sort(self.db.get_publications_by_year)
         
     def test_that_database_caches_totals_publications_per_author(self):
         self.db.get_author_totals_by_year()
-        self.assertIsNotNone(self.db.cache)
+        self.assertFalse(self.db.cache == None)
         
     def test_generic_sort_for_average_publications_per_author(self):
         self.generic_sort(self.db.get_author_totals_by_year)
