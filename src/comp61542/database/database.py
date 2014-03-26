@@ -556,7 +556,12 @@ class Database:
     
     def search_author(self, search_word):
         authors = []
-        authors.append(author for author in self.authors if search_word in author)
+        authors.extend(author for author in self.authors if (search_word in author.name))
+        
+        if (len(authors) == 1):
+            author_stats = [authors[0].name]
+            author_stats.extend(self.get_author_stats(authors[0].name))
+            return author_stats
         return authors
     
                 

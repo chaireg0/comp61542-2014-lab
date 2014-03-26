@@ -104,3 +104,13 @@ class TestSearchAuthorStatistics(unittest.TestCase):
         self.assertEqual(("Name", "Conference Papers", "Journal", "Book", "Book Chapters", "No. of first author", "No. of last author",
                           "Total Publications", "Co-authors"), table_for_html_generation[0])
         self.assertEquals([["Author1", "1", "1", "0", "1", "2", "1", "3", "3"]], table_for_html_generation[1])
+
+    def test_search_for_author_list_return(self):
+        self.assertEqual(self.db.authors.sort(), self.db.search_author('thor').sort())
+        
+    def test_that_if_one_author_is_found_a_list_with_statistics_is_returned(self):
+        authors = self.db.search_author("1")
+        print authors
+        self.assertEqual(len(authors), 9)
+        self.assertEqual(authors[0], "Author1")
+        
