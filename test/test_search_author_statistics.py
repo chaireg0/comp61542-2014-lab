@@ -108,9 +108,12 @@ class TestSearchAuthorStatistics(unittest.TestCase):
     def test_search_for_author_list_return(self):
         self.assertEqual(self.db.authors.sort(), self.db.search_author('thor').sort())
         
-    def test_that_if_one_author_is_found_a_list_with_statistics_is_returned(self):
-        authors = self.db.search_author("1")
-        print authors
-        self.assertEqual(len(authors), 9)
-        self.assertEqual(authors[0], "Author1")
+        
+    def test_that_if_no_search_results_exception_is_risen(self):
+        try:
+            authors = self.db.search_author("fjdkaljfks")
+        except:
+            return 
+        self.fail("No exception")
+        
         

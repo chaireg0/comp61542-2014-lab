@@ -302,12 +302,12 @@ class Database:
                 index = self.header_cache.index("Author")
             if not index == None:
                 sorted_pubs = sorted(self.cache, key=lambda pub: utils.convertAuthorNameToList(pub[index]))    
-            self.cache = sorted_pubs
+                self.cache = sorted_pubs
            
             try:
                 sorted_pubs = sorted(self.cache, key=lambda pub: int(pub[field]), reverse = reverse)
             except:
-                sorted_pubs = sorted(self.cache, key=lambda pub: int(pub[field]), reverse = reverse)
+                sorted_pubs = sorted(self.cache, key=lambda pub: pub[field], reverse = reverse)
             
         self.cache = sorted_pubs
         
@@ -557,14 +557,11 @@ class Database:
     def search_author(self, search_word):
         authors = []
         authors.extend(author for author in self.authors if (search_word in author.name))
-        
-        if (len(authors) == 1):
-            author_stats = [authors[0].name]
-            author_stats.extend(self.get_author_stats(authors[0].name))
-            return author_stats
+        if len(authors) == 0:
+            raise Exception()
         return authors
-    
                 
+
 class DocumentHandler(handler.ContentHandler):
     TITLE_TAGS = [ "sub", "sup", "i", "tt", "ref" ]
     PUB_TYPE = {

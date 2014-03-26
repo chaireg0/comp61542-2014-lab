@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}{{ args.title }}{% endblock %}
+{% block content %}
+
+<h1>{{ args.title }}</h1>
+
+<table>
+  <thead>
+    <tr>
+    {% set counter = 0 %}
+    {% for column in args.data[0] %}
+      
+      <th><a href="/stats/{{ counter }}">{{ column }}</a></th>
+    {% set counter = counter+1 %}
+    {% endfor %}
+    </tr>
+  </thead>
+
+  <tbody>
+  {% for row in args.data[1] %}
+    <tr>
+    {% for data_item in row %}
+      <td><a href="/authors/search/author?fname={{ data_item }}">{{ data_item }}</a></td>
+    {% endfor %}
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

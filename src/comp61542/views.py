@@ -198,13 +198,9 @@ def sortByCoauthorField(field):
     
     return render_template('coauthors.html', args = args)
     
-@app.route("/authors/search/author")
-def displayAuthorStats():
-    dataset = app.config['DATASET']
+def displayAuthorStats(authorname, args):
     db = app.config['DATABASE']
-    authorname = request.args.get('fname')
     
-    args = {"dataset":dataset, "id":authorname}
     try:
         author_stats = db.get_author_stats(authorname)
         author = {'name':authorname, "Conference": author_stats[0], "Journal": author_stats[1], "Book": author_stats[2],
@@ -216,6 +212,36 @@ def displayAuthorStats():
         return render_template('search_for_author.html', args=args)
     except:
         return searchPage()
+
+
+def displayAuthorListWithHyperlinks(authors, args):
+    db = app.config['DATABASE']
+    
+    args['title'] = "Search result"
+    header = ["Author Name"]
+    data = [[author.name] for author in authors]
+    args['data'] = (header, data)
+    db.cache = data
+    db.header_cache = header
+    db.sorted_cache = [False for i in range(0, len(header))]
+    return render_template('author_list.html', args=args)
+
+@app.route("/authors/search/author")
+def searchAuthorByKeyword():
+    dataset = app.config['DATASET']
+    db = app.config['DATABASE']
+    authorname = request.args.get('fname')
+    
+    args = {"dataset":dataset, "id":authorname}
+    authors = db.search_author(authorname)
+    
+    if (len(authors) == 1):
+        author_name = authors[0].name
+        return displayAuthorStats(author_name, args)
+    else:
+        return displayAuthorListWithHyperlinks(authors, args)
+    
+    
     
 @app.route('/authors/search')
 def searchPage():
