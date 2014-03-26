@@ -35,3 +35,9 @@ def author_all_stats_table(author):
     return (header, [author_all_stats(author)])
 
 
+def convertAuthorNameToList(authorName):
+    parts = authorName.split()
+    name_to_sort = [parts[-1]]
+    name_to_sort.extend(parts[0:len(parts) - 1])
+    return name_to_sort
+

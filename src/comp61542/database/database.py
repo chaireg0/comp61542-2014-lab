@@ -291,15 +291,30 @@ class Database:
 
     
     def sort_cache_generic(self, field):
-        try:
-            sorted_pubs = sorted(self.cache, key=lambda pub: int(pub[field]), reverse = self.sorted_cache[field])
-        except:
-            sorted_pubs = sorted(self.cache, key=lambda pub: pub[field], reverse = self.sorted_cache[field])
+        if (self.header_cache[field] == "Author" ):
+            sorted_pubs = sorted(self.cache, key=lambda pub: utils.convertAuthorNameToList(pub[field]),\
+                                  reverse = self.sorted_cache[field])
+        else:
+            
+            index = None
+            reverse = self.sorted_cache[field]
+            if "Author" in self.header_cache:
+                index = self.header_cache.index("Author")
+            if not index == None:
+                sorted_pubs = sorted(self.cache, key=lambda pub: utils.convertAuthorNameToList(pub[index]))    
+            self.cache = sorted_pubs
+           
+            try:
+                sorted_pubs = sorted(self.cache, key=lambda pub: int(pub[field]), reverse = reverse)
+            except:
+                sorted_pubs = sorted(self.cache, key=lambda pub: int(pub[field]), reverse = reverse)
+            
         self.cache = sorted_pubs
         
         self.sorted_cache[field] = not self.sorted_cache[field]
         
         return self.cache
+
     
     def get_average_authors_per_publication_by_year(self, av):
         header = ("Year", "Conference papers",
@@ -537,6 +552,13 @@ class Database:
         last_counter = self.get_times_as_last(auth_name)
         return [conf_counter, journal_counter, book_counter, bchapter_counter, 
                 first_counter, last_counter, len(pub_list), len(coauthors)]
+
+    
+    def search_author(self, search_word):
+        authors = []
+        authors.append(author for author in self.authors if search_word in author)
+        return authors
+    
                 
 class DocumentHandler(handler.ContentHandler):
     TITLE_TAGS = [ "sub", "sup", "i", "tt", "ref" ]
