@@ -23,8 +23,11 @@ Publication type:
 <table>
   <thead>
     <tr>
+    {% set counter = 0 %}
     {% for column in args.data[0] %}
-      <th>{{ column }}</th>
+      
+      <th><a href="/stats/authors/{{ counter }}">{{ column }}</a></th>
+    {% set counter = counter+1 %}
     {% endfor %}
     </tr>
   </thead>
@@ -33,7 +36,7 @@ Publication type:
   {% for row in args.data[1] %}
     <tr>
     {% for data_item in row %}
-      <td><div align="center">{{ data_item }}</div></td>
+      <td>{{ data_item }}</td>
     {% endfor %}
     </tr>
   {% endfor %}

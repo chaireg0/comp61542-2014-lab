@@ -111,7 +111,7 @@ def showAuthorFirstLastSolePerType():
     args["pub_str"] = PUB_TYPES[pub_type]
     db.args_cache = args
     db.title_cache = args['title']
-    return render_template("authorFirstLastSolePerType.html", args=args)
+    return render_template('authorFirstLastSolePerType.html', args=args)
 
 @app.route("/")
 def showStatisticsMenu():
@@ -230,6 +230,27 @@ def sortByCoauthorField(field):
 
     
     return render_template('coauthors.html', args = args)
+
+@app.route("/stats/authors/<field>")
+def sortStatsField(field):
+    db = app.config['DATABASE']
+    field = int(field)
+    db.sort_cache_generic(field)
+    
+    args = db.args_cache    
+    args['data'] = (db.header_cache, db.cache)
+    try:
+        args['title'] = db.title_cache
+    except:
+        pass #no title cached
+    
+        
+    db.title_cache = args['title']
+
+    
+    return render_template('authorFirstLastSolePerType.html', args = args)
+
+
     
 def displayAuthorStats(authorname, args):
     db = app.config['DATABASE']

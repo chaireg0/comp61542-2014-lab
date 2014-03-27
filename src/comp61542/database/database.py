@@ -601,7 +601,7 @@ class Database:
             "Number of last author", "Number of sole author")
         self.header_cache = header
         
-        auth_pub_list = [[]]
+        auth_pub_list = []
         authors = [ author.name for author in self.authors ]
         for a in authors:
             auth_pub_list.append([str(a), self.get_times_as_first(a, pub_type), self.get_times_as_last(a, pub_type),
