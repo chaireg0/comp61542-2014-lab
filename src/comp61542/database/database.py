@@ -506,11 +506,10 @@ class Database:
     
     def get_times_as_first(self, auth_name, pub_type=4):
         pub_list = self.get_publications_by_type(auth_name, pub_type)
-        authors = [ author.name for author in self.authors ]
-        author_index = authors.index(auth_name)
+        author_index = self.author_idx[auth_name]
         counter = 0
         for p in pub_list:
-            if p.authors[0] == author_index & len(p.authors) != 1:
+            if p.authors[0] == author_index and len(p.authors) != 1:
                 counter +=1
         return counter
 
@@ -520,7 +519,7 @@ class Database:
         author_index = authors.index(auth_name)
         counter = 0
         for p in pub_list:
-            if p.authors[-1] == author_index & len(p.authors) != 1:
+            if p.authors[-1] == author_index and len(p.authors) != 1:
                 counter +=1
         return counter
     
