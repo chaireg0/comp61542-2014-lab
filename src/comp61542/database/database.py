@@ -35,7 +35,12 @@ class Publication:
 class Author:
     def __init__(self, name):
         self.name = name
-    
+        
+    def total_papers(self):
+        try:
+            return self.conference_papers + self.journal_papers + self.books + self.book_chapters
+        except:
+            return 0
 class Stat:
     STR = ["Mean", "Median", "Mode"]
     FUNC = [average.mean, average.median, average.mode]
@@ -610,6 +615,25 @@ class Database:
         self.sorted_cache = [ False for i in range(0, len(header))]
         
         return (header, auth_pub_list)
+
+    
+    def calculate(self, author_name):
+        stats = self.get_author_stats(author_name)
+        author = self.getAuthor(author_name)
+        author.conference_papers = stats[0]
+        author.journal_papers = stats[1]
+        author.books = stats[2]
+        author.book_chapters = stats[3]
+    
+        
+    
+    def getAuthor(self, author_name):
+        return self.authors[self.author_idx[author_name]]
+    
+    
+        
+    
+    
                 
 
 class DocumentHandler(handler.ContentHandler):
