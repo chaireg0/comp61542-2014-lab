@@ -48,22 +48,22 @@ class TestAuthorStats(unittest.TestCase):
         author = self.db.getAuthor("Alon Y. Halevy")
         PublicationType = [
     "Conference Paper", "Journal", "Book", "Book Chapter"]
-        self.assertEqual(1, author.first[PublicationType[0]])
+        self.assertEqual(8, author.first[PublicationType[0]])
         self.assertEqual(0, author.first[PublicationType[3]])
-        self.assertEqual(1, author.first[PublicationType[1]])
+        self.assertEqual(6, author.first[PublicationType[1]])
         self.assertEqual(0, author.first[PublicationType[2]])
-        self.assertEqual(2, author.first["overall"])
+        self.assertEqual(14, author.first["overall"])
 
     def test_that_db_calculates_number_of_publications_for_authors_as_last_author(self):
         self.db.calculate("Alon Y. Halevy")
         author = self.db.getAuthor("Alon Y. Halevy")
         PublicationType = [
     "Conference Paper", "Journal", "Book", "Book Chapter"]
-        self.assertEqual(0, author.last[PublicationType[0]])
-        self.assertEqual(0, author.last[PublicationType[3]])
-        self.assertEqual(2, author.last[PublicationType[1]])
+        self.assertEqual(25, author.last[PublicationType[0]])
+        self.assertEqual(2, author.last[PublicationType[3]])
+        self.assertEqual(18, author.last[PublicationType[1]])
         self.assertEqual(0, author.last[PublicationType[2]])
-        self.assertEqual(2, author.first["overall"])
+        self.assertEqual(45, author.last["overall"])
     
     def test_that_db_calculates_number_of_publications_for_authors_as_sole_author(self):
         self.db.calculate("Alon Y. Halevy")

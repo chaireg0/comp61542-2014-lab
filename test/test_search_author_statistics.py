@@ -26,6 +26,7 @@ class TestSearchAuthorStatistics(unittest.TestCase):
         
         db = database.Database()
         db.authors = [auth1, auth2, auth3, auth4]
+        db.author_idx = {"Author1":0, "Author2":1, "Author3":2, "Author4":3}
         db.publications = [self.pub1, self.pub2, self.pub3]
         self.db = db
         comp61542.app.config['DATABASE'] = self.db
