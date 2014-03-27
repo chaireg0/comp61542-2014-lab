@@ -19,8 +19,14 @@
   <tbody>
   {% for row in args.data[1] %}
     <tr>
+    {% set counter = 0 %}
     {% for data_item in row %}
+    {% if counter == 0 %}
+      <td><a href="/profile/{{ data_item }}">{{ data_item }}</a></td>
+    {% set counter = counter+1 %}
+    {% else %}
       <td>{{ data_item }}</td>
+    {% set counter = counter+1 %}
     {% endfor %}
     </tr>
   {% endfor %}
