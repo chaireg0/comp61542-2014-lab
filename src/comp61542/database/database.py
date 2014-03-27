@@ -499,26 +499,37 @@ class Database:
         return pub_list
 
     
-    def get_times_as_first(self, auth_name):
-        pub_list = self.search_by_author(auth_name)
+    def get_times_as_first(self, auth_name, pub_type=4):
+        pub_list = self.get_publications_by_type(auth_name, pub_type)
+        sole_pub_list = self.get_sole_publications(auth_name)
+        for p in sole_pub_list:
+            if p in pub_list:
+                pub_list.remove(p)
         authors = [ author.name for author in self.authors ]
         author_index = authors.index(auth_name)
         counter = 0
         for p in pub_list:
-            if p.authors[0] == author_index:
+            if p.authors[0] == author_index & len(p.authors) != 1:
                 counter +=1
         return counter
 
-    
-    def get_times_as_last(self, auth_name):
-        pub_list = self.search_by_author(auth_name)
+    def get_times_as_last(self, auth_name, pub_type=4):
+        pub_list = self.get_publications_by_type(auth_name, pub_type)
+        sole_pub_list = self.get_sole_publications(auth_name)
+        for p in sole_pub_list:
+            if p in pub_list:
+                pub_list.remove(p)
         authors = [ author.name for author in self.authors ]
         author_index = authors.index(auth_name)
         counter = 0
         for p in pub_list:
-            if p.authors[-1] == author_index:
+            if p.authors[-1] == author_index & len(p.authors) != 1:
                 counter +=1
         return counter
+    
+    def get_times_as_sole(self, auth_name, pub_type=4):
+        pub_list = self.get_sole_publications(auth_name, pub_type)
+        return len(pub_list)
 
     def get_author_stats(self, auth_name):
         pub_list = self.search_by_author(auth_name)
@@ -550,8 +561,9 @@ class Database:
                         coauthors.append(a)
         first_counter = self.get_times_as_first(auth_name)
         last_counter = self.get_times_as_last(auth_name)
+        sole_counter = self.get_times_as_sole(auth_name)
         return [conf_counter, journal_counter, book_counter, bchapter_counter, 
-                first_counter, last_counter, len(pub_list), len(coauthors)]
+                first_counter, last_counter, sole_counter, len(pub_list), len(coauthors)]
 
     
     def search_author(self, search_word):
@@ -560,6 +572,44 @@ class Database:
         if len(authors) == 0:
             raise Exception()
         return authors
+
+    def get_publications_by_type(self, auth_name, pub_type=4):
+        pub_list = []
+        all_pubs = self.search_by_author(auth_name)
+        if (pub_type == 4):
+            pub_list = all_pubs
+            return pub_list
+        else:
+            for p in all_pubs:
+                if p.pub_type==pub_type:
+                    pub_list.append(p)
+        return pub_list
+    
+    def get_sole_publications(self, auth_name, pub_type=4):
+        pub_list = self.get_publications_by_type(auth_name, pub_type)
+        sole_pub_list = []
+        for p in pub_list:
+            if len(p.authors) == 1:
+                sole_pub_list.append(p)
+        return sole_pub_list
+
+    
+
+    
+    def get_all_authors_stats(self, pub_type=4):
+        header = ("Author", "Number of first author",
+            "Number of last author", "Number of sole author")
+        self.header_cache = header
+        
+        auth_pub_list = [[]]
+        authors = [ author.name for author in self.authors ]
+        for a in authors:
+            auth_pub_list.append([str(a), self.get_times_as_first(a, pub_type), self.get_times_as_last(a, pub_type),
+                                  self.get_times_as_sole(a, pub_type)])
+        self.cache = auth_pub_list
+        self.sorted_cache = [ False for i in range(0, len(header))]
+        
+        return (header, auth_pub_list)
                 
 
 class DocumentHandler(handler.ContentHandler):
