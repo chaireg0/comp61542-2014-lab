@@ -92,6 +92,27 @@ def showCoAuthors():
     db.title_cache = args['title']
     return render_template("coauthors.html", args=args)
 
+@app.route("/firstLastSoleType")
+def showAuthorFirstLastSolePerType():
+    dataset = app.config['DATASET']
+    db = app.config['DATABASE']
+    PUB_TYPES = ["Conference Papers", "Journals", "Books", "Book Chapters", "All Publications"]
+    args = {"dataset":dataset, "id":"firstLastSoleType"}
+    args["title"] = "Author First/Last/Sole per publication type"
+    
+    db.title_cache = args['title']
+    
+    pub_type = 4
+    if "pub_type" in request.args:
+        pub_type = int(request.args.get("pub_type"))
+
+    args["data"] = db.get_all_authors_stats(pub_type)
+    args["pub_type"] = pub_type
+    args["pub_str"] = PUB_TYPES[pub_type]
+    db.args_cache = args
+    db.title_cache = args['title']
+    return render_template("authorFirstLastSolePerType.html", args=args)
+
 @app.route("/")
 def showStatisticsMenu():
     dataset = app.config['DATASET']
@@ -119,6 +140,15 @@ def showPublicationSummary(status):
     if (status == "author_year"):
         args["title"] = "Author by Year"
         args["data"] = db.get_author_totals_by_year()
+    
+    if (status == "author_first_last_sole"):
+        args["title"] = "Author statistics"
+        args["data"] = db.get_all_authors_stats()
+        
+    if (status == "author_first_last_sole_per_type"):
+        args["title"] = "Author statistics per type"
+        args["data"] = db.get_all_authors_stats(3)
+        
     db.title_cache = args['title']
     
     return render_template('statistics_details.html', args=args)
@@ -148,7 +178,7 @@ def displayPublications(sortby):
     return render_template('publications.html', args=args)
 
 @app.route("/author/firstlast")
-def displayAuthorFirstLastStats():
+def displayAuthorFirstLastSoleStats():
     dataset = app.config['DATASET']
     db = app.config['DATABASE']
     try:
@@ -157,14 +187,14 @@ def displayAuthorFirstLastStats():
         first = db.get_times_as_first(authorname)
         last = db.get_times_as_last(authorname)
         author = {'name':authorname, 'first':first, 'last':last}
-        args['title'] = "Author First/Last stats"
+        args['title'] = "Author First/Last/Sole stats"
         db.title_cache = args['title']
         
         args['data'] = utils.author_stats_fist_last_table(author)
         return render_template('author_first_last.html', args=args)
     except:
         return firstlast()
-    
+   
 @app.route("/stats/<field>")
 def sortByField(field):
     db = app.config['DATABASE']
@@ -208,8 +238,8 @@ def displayAuthorStats():
     try:
         author_stats = db.get_author_stats(authorname)
         author = {'name':authorname, "Conference": author_stats[0], "Journal": author_stats[1], "Book": author_stats[2],
-                      "Book Chapter": author_stats[3], "first": author_stats[4], "last": author_stats[5],
-                      "Total": author_stats[6], "coauthors": author_stats[7]}
+                      "Book Chapter": author_stats[3], "first": author_stats[4], "last": author_stats[5], "sole": author_stats[6],
+                      "Total": author_stats[7], "coauthors": author_stats[8]}
         args['data'] = utils.author_all_stats_table(author)
         args['title'] = str(authorname)
         db.title_cache = args['title']
@@ -236,3 +266,36 @@ def firstlast():
     db.title_cache = args['title']
     args['data'] = '/author/firstlast'
     return render_template('search.html', args=args)
+
+def showAllAuthorsFirstLastSole():
+    dataset = app.config['DATASET']
+    db = app.config['DATABASE']
+    PUB_TYPES = ["Author", "Journals", "Books", "Book Chapters", "All Publications"]
+    args = {"dataset":dataset, "id":"coauthors"}
+    args["title"] = "Co-Authors"
+    
+    db.title_cache = args['title']
+    start_year = db.min_year
+    if "start_year" in request.args:
+        start_year = int(request.args.get("start_year"))
+
+    end_year = db.max_year
+    if "end_year" in request.args:
+        end_year = int(request.args.get("end_year"))
+
+    pub_type = 4
+    if "pub_type" in request.args:
+        pub_type = int(request.args.get("pub_type"))
+
+    args["data"] = db.get_coauthor_data(start_year, end_year, pub_type)
+    args["start_year"] = start_year
+    args["end_year"] = end_year
+    args["pub_type"] = pub_type
+    args["min_year"] = db.min_year
+    args["max_year"] = db.max_year
+    args["start_year"] = start_year
+    args["end_year"] = end_year
+    args["pub_str"] = PUB_TYPES[pub_type]
+    db.args_cache = args
+    db.title_cache = args['title']
+    return render_template("coauthors.html", args=args)

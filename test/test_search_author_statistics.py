@@ -41,14 +41,14 @@ class TestSearchAuthorStatistics(unittest.TestCase):
 
     def test_that_author_appears_n_times_as_first_author(self):
         n = self.db.get_times_as_first("Author1")
-        self.assertEqual(n, 2)
+        self.assertEqual(n, 1)
         
         n = self.db.get_times_as_first("Author2")
         self.assertEqual(n, 0)
     
     def test_that_author_appears_n_times_as_last_author(self):
         n = self.db.get_times_as_last("Author1")
-        self.assertEqual(n, 1)    
+        self.assertEqual(n, 0)    
         
         n = self.db.get_times_as_last("Author2")
         self.assertEqual(n, 0) 
@@ -56,51 +56,69 @@ class TestSearchAuthorStatistics(unittest.TestCase):
         n = self.db.get_times_as_last("Author3")
         self.assertEqual(n, 2) 
 
+    def test_get_sole_author_pubs(self):
+        pub_list = self.db.get_sole_publications("Author1")
+        self.assertTrue(self.pub3 in pub_list)
+        
+        pub_list = self.db.get_sole_publications("Author2")
+        self.assertTrue(len(pub_list) == 0)
+        
+    def test_that_author_appears_n_times_as_sole_author(self):
+        n = self.db.get_times_as_sole("Author1")
+        self.assertEqual(n, 1)
+        
+        n = self.db.get_times_as_sole("Author2")
+        self.assertEqual(n, 0)
+        
     def test_search_function_for_author(self):
         author_stats = self.db.get_author_stats("Author1")
-        self.assertEqual(author_stats, [1, 1, 0, 1, 2, 1, 3, 3])
+        self.assertEqual(author_stats, [1, 1, 0, 1, 1, 0, 1, 3, 3])
         
         author_stats = self.db.get_author_stats("Author2")
-        self.assertEqual(author_stats, [1, 0, 0, 0, 0, 0, 1, 2])    
+        self.assertEqual(author_stats, [1, 0, 0, 0, 0, 0, 0, 1, 2])    
          
-    def test_table_for_author_first_last_stats(self):
+    def test_table_for_author_first_last_sole_stats(self):
         times_appeared_first = self.db.get_times_as_first("Author1")
         times_appeared_last = self.db.get_times_as_last("Author1")
-        author = {"name": "Author1", "first": times_appeared_first, "last": times_appeared_last}
+        times_appeared_sole = self.db.get_times_as_sole("Author1")
+        author = {"name": "Author1", "first": times_appeared_first, "last": times_appeared_last,
+                  "sole": times_appeared_sole}
         
-        table_for_html_generation = utils.author_stats_fist_last(author)
+        table_for_html_generation = utils.author_stats_fist_last_sole(author)
         
-        self.assertEquals(["Author1", "2", "1"], table_for_html_generation)
+        self.assertEquals(["Author1", "1", "0", "1"], table_for_html_generation)
       
-    def test_table_for_author_first_last_stats_with_header(self):
+    def test_table_for_author_first_last_sole_stats_with_header(self):
         times_appeared_first = self.db.get_times_as_first("Author1")
         times_appeared_last = self.db.get_times_as_last("Author1")
-        author = {"name": "Author1", "first": times_appeared_first, "last": times_appeared_last}
+        times_appeared_sole = self.db.get_times_as_sole("Author1")
+        author = {"name": "Author1", "first": times_appeared_first, "last": times_appeared_last,
+                  "sole": times_appeared_sole}
         
-        table_for_html_generation = utils.author_stats_fist_last_table(author)
+        table_for_html_generation = utils.author_stats_fist_last_sole_table(author)
         
-        self.assertEqual(("Name", "Times appeared first", "Times appeared last"),\
+        self.assertEqual(("Name", "Times appeared first", "Times appeared last", "Times appeared sole"),\
                            table_for_html_generation[0])
-        self.assertEquals([["Author1", "2", "1"]], table_for_html_generation[1])
+        self.assertEquals([["Author1", "1", "0", "1"]], table_for_html_generation[1])
         
     def test_table_for_author_stats(self):
         author_stats = self.db.get_author_stats("Author1")
         author = {"name": "Author1", "Conference": author_stats[0], "Journal": author_stats[1], "Book": author_stats[2],
                   "Book Chapter": author_stats[3], "first": author_stats[4], "last": author_stats[5],
-                  "Total": author_stats[6], "coauthors": author_stats[7]}
+                  "sole": author_stats[6], "Total": author_stats[7], "coauthors": author_stats[8]}
         
         table_for_html_generation = utils.author_all_stats(author)
         
-        self.assertEquals(["Author1", "1", "1", "0", "1", "2", "1", "3", "3"], table_for_html_generation)
+        self.assertEquals(["Author1", "1", "1", "0", "1", "1", "0", "1", "3", "3"], table_for_html_generation)
         
     def test_table_for_author_stats_with_header(self):
         author_stats = self.db.get_author_stats("Author1")
         author = {"name": "Author1", "Conference": author_stats[0], "Journal": author_stats[1], "Book": author_stats[2],
                   "Book Chapter": author_stats[3], "first": author_stats[4], "last": author_stats[5],
-                  "Total": author_stats[6], "coauthors": author_stats[7]}
+                  "sole": author_stats[6], "Total": author_stats[7], "coauthors": author_stats[8]}
         
         table_for_html_generation = utils.author_all_stats_table(author)
         
         self.assertEqual(("Name", "Conference Papers", "Journal", "Book", "Book Chapters", "No. of first author", "No. of last author",
-                          "Total Publications", "Co-authors"), table_for_html_generation[0])
-        self.assertEquals([["Author1", "1", "1", "0", "1", "2", "1", "3", "3"]], table_for_html_generation[1])
+                          "No. of sole author", "Total Publications", "Co-authors"), table_for_html_generation[0])
+        self.assertEquals([["Author1", "1", "1", "0", "1", "1", "0", "1", "3", "3"]], table_for_html_generation[1])
