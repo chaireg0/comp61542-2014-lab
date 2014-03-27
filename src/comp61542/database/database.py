@@ -604,13 +604,16 @@ class Database:
         auth_pub_list = []
         authors = [ author.name for author in self.authors ]
         for a in authors:
-            auth_pub_list.append([str(a), self.get_times_as_first(a, pub_type), self.get_times_as_last(a, pub_type),
-                                  self.get_times_as_sole(a, pub_type)])
+            auth_pub_list.append(self.get_author_stats_per_type(a, pub_type))
         self.cache = auth_pub_list
         self.sorted_cache = [ False for i in range(0, len(header))]
         
         return (header, auth_pub_list)
-                
+
+    def get_author_stats_per_type(self, author_name, pub_type=4):            
+        return [str(author_name), self.get_times_as_first(author_name, pub_type),
+                self.get_times_as_last(author_name, pub_type), 
+                self.get_times_as_sole(author_name, pub_type)]                
 
 class DocumentHandler(handler.ContentHandler):
     TITLE_TAGS = [ "sub", "sup", "i", "tt", "ref" ]
