@@ -20,7 +20,7 @@
   {% for row in args.data[1] %}
     <tr>
     {% for data_item in row %}
-      <td><a href="/authors/search/author?fname={{ data_item }}">{{ data_item }}</a></td>
+      <td><a href="/profile/{{ data_item }}">{{ data_item }}</a></td>
     {% endfor %}
     </tr>
   {% endfor %}

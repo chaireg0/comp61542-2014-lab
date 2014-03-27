@@ -625,16 +625,68 @@ class Database:
     def getAuthor(self, author_name):
         return self.authors[self.author_idx[author_name]]
         
-    
-        
-    
-    
     def get_author_stats_per_type(self, author_name, pub_type=4):            
         return [str(author_name), self.get_times_as_first(author_name, pub_type),
                 self.get_times_as_last(author_name, pub_type), 
                 self.get_times_as_sole(author_name, pub_type)]                
 
-
+    def get_author_profile(self, author_name):
+        self.calculate(author_name)
+        author = self.getAuthor(author_name)
+        tables = []
+        table = {}
+        table["rows"] = []
+        table["title"] = "Number of publications" 
+        table["header"] = []
+        table["header"].extend(PublicationType)
+        table["header"].append("Overall")
+        table["rows"].append([author.conference_papers, author.journal_papers, author.books, author.book_chapters, author.total_papers()])
+        tables.extend([table])
+        
+        table={}
+        table["rows"] = []
+        table["title"] = "Number of publications as first Author" 
+        table["header"] = []
+        table["header"].extend(PublicationType)
+        table["header"].append("Overall")
+        table["rows"].append([author.first[PublicationType[0]], author.first[PublicationType[1]],\
+                               author.first[PublicationType[2]], author.first[PublicationType[3]],\
+                                author.first["overall"]])
+        
+        tables.append(table)
+        table = {}
+        table["rows"] = []
+        table["title"] = "Number of publications as last Author" 
+        table["header"] = []
+        table["header"].extend(PublicationType)
+        table["header"].append("Overall")
+        table["rows"].append([author.last[PublicationType[0]], author.last[PublicationType[1]],\
+                               author.last[PublicationType[2]], author.last[PublicationType[3]],\
+                                author.last["overall"]])
+        
+        tables.append(table)
+        table = {}
+        table["rows"] = []
+        table["title"] = "Number of publications as sole Author" 
+        table["header"] = []
+        table["header"].extend(PublicationType)
+        table["header"].append("Overall")
+        table["rows"].append([author.sole[PublicationType[0]], author.sole[PublicationType[1]],\
+                               author.sole[PublicationType[2]], author.sole[PublicationType[3]],\
+                                author.sole["overall"]])
+        tables.append(table)
+        table={}
+        table["rows"] = []
+        table["title"] = "Coauthors" 
+        table["header"] = ["Number of co-authors"]
+        table["rows"].append([author.coauthors])
+        
+        tables.append(table)
+        
+        return tables
+        
+        
+        
 class DocumentHandler(handler.ContentHandler):
     TITLE_TAGS = [ "sub", "sup", "i", "tt", "ref" ]
     PUB_TYPE = {
