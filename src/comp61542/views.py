@@ -291,7 +291,7 @@ def searchAuthorByKeyword():
     
     if (len(authors) == 1):
         author_name = authors[0].name
-        return displayAuthorStats(author_name, args)
+        return getAuthorProfile(author_name)
     else:
         return displayAuthorListWithHyperlinks(authors, args)
     
@@ -349,3 +349,15 @@ def showAllAuthorsFirstLastSole():
     db.args_cache = args
     db.title_cache = args['title']
     return render_template("coauthors.html", args=args)
+
+
+@app.route("/profile/<author>")
+def getAuthorProfile(author):
+    dataset = app.config['DATASET']
+    db = app.config['DATABASE']
+    args = {"dataset":dataset, "id":"coauthors"}
+    args['title'] = author + " profile"
+    
+    tables = db.get_author_profile(author)
+    args["tables"] = tables
+    return render_template('author_profile.html',args=args )
