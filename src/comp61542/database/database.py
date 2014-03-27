@@ -506,10 +506,6 @@ class Database:
     
     def get_times_as_first(self, auth_name, pub_type=4):
         pub_list = self.get_publications_by_type(auth_name, pub_type)
-        sole_pub_list = self.get_sole_publications(auth_name)
-        for p in sole_pub_list:
-            if p in pub_list:
-                pub_list.remove(p)
         authors = [ author.name for author in self.authors ]
         author_index = authors.index(auth_name)
         counter = 0
@@ -520,10 +516,6 @@ class Database:
 
     def get_times_as_last(self, auth_name, pub_type=4):
         pub_list = self.get_publications_by_type(auth_name, pub_type)
-        sole_pub_list = self.get_sole_publications(auth_name)
-        for p in sole_pub_list:
-            if p in pub_list:
-                pub_list.remove(p)
         authors = [ author.name for author in self.authors ]
         author_index = authors.index(auth_name)
         counter = 0
@@ -551,24 +543,14 @@ class Database:
                 book_counter += 1
             elif p.pub_type == 3:
                 bchapter_counter += 1
-        coauthors = []
-        '''
-        for author in self.authors:
-            if author.name == auth_name:
-                given_author = author
-        '''
-        authors = [ author.name for author in self.authors ]
-        author_index = authors.index(auth_name)
-        for p in pub_list:
-            for a in p.authors:
-                if a != author_index:
-                    if a not in coauthors:
-                        coauthors.append(a)
+        
+        coauthors = self._get_collaborations(self.author_idx[auth_name], False)
+        
         first_counter = self.get_times_as_first(auth_name)
         last_counter = self.get_times_as_last(auth_name)
         sole_counter = self.get_times_as_sole(auth_name)
         return [conf_counter, journal_counter, book_counter, bchapter_counter, 
-                first_counter, last_counter, sole_counter, len(pub_list), len(coauthors)]
+                first_counter, last_counter, sole_counter, len(pub_list), len(coauthors.keys())]
 
     
     def search_author(self, search_word):
@@ -609,32 +591,49 @@ class Database:
         auth_pub_list = []
         authors = [ author.name for author in self.authors ]
         for a in authors:
-            auth_pub_list.append([str(a), self.get_times_as_first(a, pub_type), self.get_times_as_last(a, pub_type),
-                                  self.get_times_as_sole(a, pub_type)])
+            auth_pub_list.append(self.get_author_stats_per_type(a, pub_type))
         self.cache = auth_pub_list
         self.sorted_cache = [ False for i in range(0, len(header))]
         
         return (header, auth_pub_list)
 
-    
     def calculate(self, author_name):
         stats = self.get_author_stats(author_name)
         author = self.getAuthor(author_name)
+        
         author.conference_papers = stats[0]
         author.journal_papers = stats[1]
         author.books = stats[2]
         author.book_chapters = stats[3]
-    
+        author.coauthors = stats[8]
+        counter = 0
+        author.first = {}
+        author.last = {}
+        author.sole = {}
+        for pub_type in PublicationType:
+            stats = self.get_author_stats_per_type(author_name, counter)
+            counter += 1
+            author.first[pub_type] = stats[1]
+            author.last[pub_type] = stats[2]
+            author.sole[pub_type] = stats[3]
         
-    
+        stats = self.get_author_stats_per_type(author_name)
+        author.first["overall"] = stats[1]
+        author.last["overall"] = stats[2]
+        author.sole["overall"] = stats[3]
+        
     def getAuthor(self, author_name):
         return self.authors[self.author_idx[author_name]]
-    
+        
     
         
     
     
-                
+    def get_author_stats_per_type(self, author_name, pub_type=4):            
+        return [str(author_name), self.get_times_as_first(author_name, pub_type),
+                self.get_times_as_last(author_name, pub_type), 
+                self.get_times_as_sole(author_name, pub_type)]                
+
 
 class DocumentHandler(handler.ContentHandler):
     TITLE_TAGS = [ "sub", "sup", "i", "tt", "ref" ]

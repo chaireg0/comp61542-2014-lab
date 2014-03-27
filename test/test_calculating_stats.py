@@ -15,7 +15,7 @@ class TestAuthorStats(unittest.TestCase):
 
     def setUp(self):
         directory, _ = path.split(__file__)
-        data = "dblp_2000_2005_114_papers.xml"
+        data = "dblp_curated_sample.xml"
         comp61542.app.config['TESTING'] = True
         comp61542.app.config['DATASET'] = data
         db = Database()
@@ -36,21 +36,50 @@ class TestAuthorStats(unittest.TestCase):
 
         self.db.calculate("Alon Y. Halevy")
         author = self.db.getAuthor("Alon Y. Halevy")
-        self.assertEquals(author.conference_papers, 39)
-        self.assertEquals(31, author.journal_papers)
-        self.assertEquals(1, author.book_chapters)
-        self.assertEquals(0, author.books)
-        self.assertEquals(71, author.total_papers())
+        self.assertEqual(72, author.conference_papers)
+        self.assertEqual(4, author.book_chapters)
+        self.assertEqual(62, author.journal_papers)
+        self.assertEqual(1, author.books)
+        self.assertEquals(139, author.total_papers())
 
 
     def test_that_db_calculates_number_of_publications_for_authors_as_first_author(self):
         self.db.calculate("Alon Y. Halevy")
         author = self.db.getAuthor("Alon Y. Halevy")
-        
-        self.assertEqual(3, author.first["conference"])
-        self.assertEqual(1, author.first["book_chapter"])
-        self.assertEqual(0, author.first["journal"])
-        self.assertEqual(0, author.first["book"])
+        PublicationType = [
+    "Conference Paper", "Journal", "Book", "Book Chapter"]
+        self.assertEqual(1, author.first[PublicationType[0]])
+        self.assertEqual(0, author.first[PublicationType[3]])
+        self.assertEqual(1, author.first[PublicationType[1]])
+        self.assertEqual(0, author.first[PublicationType[2]])
+        self.assertEqual(2, author.first["overall"])
+
+    def test_that_db_calculates_number_of_publications_for_authors_as_last_author(self):
+        self.db.calculate("Alon Y. Halevy")
+        author = self.db.getAuthor("Alon Y. Halevy")
+        PublicationType = [
+    "Conference Paper", "Journal", "Book", "Book Chapter"]
+        self.assertEqual(0, author.last[PublicationType[0]])
+        self.assertEqual(0, author.last[PublicationType[3]])
+        self.assertEqual(2, author.last[PublicationType[1]])
+        self.assertEqual(0, author.last[PublicationType[2]])
+        self.assertEqual(2, author.first["overall"])
+    
+    def test_that_db_calculates_number_of_publications_for_authors_as_sole_author(self):
+        self.db.calculate("Alon Y. Halevy")
+        author = self.db.getAuthor("Alon Y. Halevy")
+        PublicationType = [
+    "Conference Paper", "Journal", "Book", "Book Chapter"]
+        self.assertEqual(10, author.sole[PublicationType[0]])
+        self.assertEqual(2, author.sole[PublicationType[3]])
+        self.assertEqual(7, author.sole[PublicationType[1]])
+        self.assertEqual(0, author.sole[PublicationType[2]])
+        self.assertEqual(19, author.sole["overall"])
+    
+    def test_that_db_calculates_number_of_coauthors_for_author(self):
+        self.db.calculate("Alon Y. Halevy")
+        author = self.db.getAuthor("Alon Y. Halevy")
+        self.assertEquals(195, author.coauthors)
         
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.test_that_']
