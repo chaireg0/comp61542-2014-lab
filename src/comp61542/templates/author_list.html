@@ -7,9 +7,11 @@
 <table>
   <thead>
     <tr>
-    {% set authorExists = "Author" in args.data[0] %}
+    {% set counter = 0 %}
     {% for column in args.data[0] %}
-      <th><a href="/publications/{{ column }}">{{ column }}</a></th>
+      
+      <th><a href="/stats/{{ counter }}">{{ column }}</a></th>
+    {% set counter = counter+1 %}
     {% endfor %}
     </tr>
   </thead>
@@ -18,7 +20,7 @@
   {% for row in args.data[1] %}
     <tr>
     {% for data_item in row %}
-      <td><div align="center">{{ data_item }}</div></td>
+      <td><a href="/profile/{{ data_item }}">{{ data_item }}</a></td>
     {% endfor %}
     </tr>
   {% endfor %}

@@ -7,9 +7,12 @@
 <table>
   <thead>
     <tr>
+    {% set authorExists = "Author" in args.data[0] %}
+    
     {% set counter = 0 %}
     {% for column in args.data[0] %}
-      
+    
+    
       <th><a href="/stats/{{ counter }}">{{ column }}</a></th>
     {% set counter = counter+1 %}
     {% endfor %}
@@ -19,8 +22,15 @@
   <tbody>
   {% for row in args.data[1] %}
     <tr>
+    {% set counter = 0 %}
     {% for data_item in row %}
+    {% if counter == 0 and authorExists %}
+      <td><a href="/profile/{{ data_item }}">{{ data_item }}</a></td>
+    {% set counter = counter+1 %}
+    {% else %}
       <td>{{ data_item }}</td>
+    {% set counter = counter+1 %}
+    {% endif %}
     {% endfor %}
     </tr>
   {% endfor %}

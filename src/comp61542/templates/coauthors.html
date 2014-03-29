@@ -24,10 +24,11 @@ Publication type:
 <table>
   <thead>
     <tr>
+    {% set authorExists = "Author" in args.data[0] %}
     {% set counter = 0 %}
     {% for column in args.data[0] %}
       
-      <th><a href="/stats/{{ counter }}">{{ column }}</a></th>
+      <th><a href="/stats/coauthors/{{ counter }}">{{ column }}</a></th>
     {% set counter = counter+1 %}
     {% endfor %}
     </tr>
@@ -36,9 +37,30 @@ Publication type:
   <tbody>
   {% for row in args.data[1] %}
     <tr>
-    {% for data_item in row %}
-      <td>{{ data_item }}</td>
-    {% endfor %}
+        {% set counter = 0 %}
+	    {% for data_item in row %}
+		    {% if counter == 0 and authorExists %}
+		    {% set author_name = data_item.split(" (")[0] %}
+		      <td><a href="/profile/{{ author_name }}">{{ author_name }}</a></td>
+		    {% set counter = counter+1 %}
+		    {% else %}
+		    	<td>
+		    	{% set coauthors = data_item.split(", ") %}
+		    	{% set counter = 0 %}
+		    	{% for coauthor in coauthors %}
+		    		{% set author_name = coauthor.split(" (")[0] %}
+		    		{% if counter < coauthors|length - 1 %}
+		    			{% set comma = ", " %}
+	    			{% else %}
+	    				{% set comma = "" %}
+    				{% endif %}
+		      		<a href="/profile/{{ author_name }}">{{ coauthor }}</a>{{ comma }}
+		      		{% set counter = counter + 1 %}
+	      		{% endfor %}
+	      		</td>
+		    {% set counter = counter+1 %}
+		    {% endif %}
+	    {% endfor %}
     </tr>
   {% endfor %}
   </tbody>

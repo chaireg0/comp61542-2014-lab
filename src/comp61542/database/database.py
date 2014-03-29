@@ -35,7 +35,12 @@ class Publication:
 class Author:
     def __init__(self, name):
         self.name = name
-    
+        
+    def total_papers(self):
+        try:
+            return self.conference_papers + self.journal_papers + self.books + self.book_chapters
+        except:
+            return 0
 class Stat:
     STR = ["Mean", "Median", "Mode"]
     FUNC = [average.mean, average.median, average.mode]
@@ -291,15 +296,30 @@ class Database:
 
     
     def sort_cache_generic(self, field):
-        try:
-            sorted_pubs = sorted(self.cache, key=lambda pub: int(pub[field]), reverse = self.sorted_cache[field])
-        except:
-            sorted_pubs = sorted(self.cache, key=lambda pub: pub[field], reverse = self.sorted_cache[field])
+        if (self.header_cache[field] == "Author" ):
+            sorted_pubs = sorted(self.cache, key=lambda pub: utils.convertAuthorNameToList(pub[field]),\
+                                  reverse = self.sorted_cache[field])
+        else:
+            
+            index = None
+            reverse = self.sorted_cache[field]
+            if "Author" in self.header_cache:
+                index = self.header_cache.index("Author")
+            if not index == None:
+                sorted_pubs = sorted(self.cache, key=lambda pub: utils.convertAuthorNameToList(pub[index]))    
+                self.cache = sorted_pubs
+           
+            try:
+                sorted_pubs = sorted(self.cache, key=lambda pub: int(pub[field]), reverse = reverse)
+            except:
+                sorted_pubs = sorted(self.cache, key=lambda pub: pub[field], reverse = reverse)
+            
         self.cache = sorted_pubs
         
         self.sorted_cache[field] = not self.sorted_cache[field]
         
         return self.cache
+
     
     def get_average_authors_per_publication_by_year(self, av):
         header = ("Year", "Conference papers",
@@ -484,26 +504,28 @@ class Database:
         return pub_list
 
     
-    def get_times_as_first(self, auth_name):
-        pub_list = self.search_by_author(auth_name)
-        authors = [ author.name for author in self.authors ]
-        author_index = authors.index(auth_name)
+    def get_times_as_first(self, auth_name, pub_type=4):
+        pub_list = self.get_publications_by_type(auth_name, pub_type)
+        author_index = self.author_idx[auth_name]
         counter = 0
         for p in pub_list:
-            if p.authors[0] == author_index:
+            if p.authors[0] == author_index and len(p.authors) != 1:
                 counter +=1
         return counter
 
-    
-    def get_times_as_last(self, auth_name):
-        pub_list = self.search_by_author(auth_name)
+    def get_times_as_last(self, auth_name, pub_type=4):
+        pub_list = self.get_publications_by_type(auth_name, pub_type)
         authors = [ author.name for author in self.authors ]
         author_index = authors.index(auth_name)
         counter = 0
         for p in pub_list:
-            if p.authors[-1] == author_index:
+            if p.authors[-1] == author_index and len(p.authors) != 1:
                 counter +=1
         return counter
+    
+    def get_times_as_sole(self, auth_name, pub_type=4):
+        pub_list = self.get_sole_publications(auth_name, pub_type)
+        return len(pub_list)
 
     def get_author_stats(self, auth_name):
         pub_list = self.search_by_author(auth_name)
@@ -520,24 +542,150 @@ class Database:
                 book_counter += 1
             elif p.pub_type == 3:
                 bchapter_counter += 1
-        coauthors = []
-        '''
-        for author in self.authors:
-            if author.name == auth_name:
-                given_author = author
-        '''
-        authors = [ author.name for author in self.authors ]
-        author_index = authors.index(auth_name)
-        for p in pub_list:
-            for a in p.authors:
-                if a != author_index:
-                    if a not in coauthors:
-                        coauthors.append(a)
+        
+        coauthors = self._get_collaborations(self.author_idx[auth_name], False)
+        
         first_counter = self.get_times_as_first(auth_name)
         last_counter = self.get_times_as_last(auth_name)
+        sole_counter = self.get_times_as_sole(auth_name)
         return [conf_counter, journal_counter, book_counter, bchapter_counter, 
-                first_counter, last_counter, len(pub_list), len(coauthors)]
-                
+                first_counter, last_counter, sole_counter, len(pub_list), len(coauthors.keys())]
+
+    
+    def search_author(self, search_word):
+        authors = []
+        authors.extend(author for author in self.authors if (search_word in author.name))
+        if len(authors) == 0:
+            raise Exception()
+        return authors
+
+    def get_publications_by_type(self, auth_name, pub_type=4):
+        pub_list = []
+        all_pubs = self.search_by_author(auth_name)
+        if (pub_type == 4):
+            pub_list = all_pubs
+            return pub_list
+        else:
+            for p in all_pubs:
+                if p.pub_type==pub_type:
+                    pub_list.append(p)
+        return pub_list
+    
+    def get_sole_publications(self, auth_name, pub_type=4):
+        pub_list = self.get_publications_by_type(auth_name, pub_type)
+        sole_pub_list = []
+        for p in pub_list:
+            if len(p.authors) == 1:
+                sole_pub_list.append(p)
+        return sole_pub_list
+
+    
+
+    
+    def get_all_authors_stats(self, pub_type=4):
+        header = ("Author", "Number of first author",
+            "Number of last author", "Number of sole author")
+        self.header_cache = header
+        
+        auth_pub_list = []
+        authors = [ author.name for author in self.authors ]
+        for a in authors:
+            auth_pub_list.append(self.get_author_stats_per_type(a, pub_type))
+        self.cache = auth_pub_list
+        self.sorted_cache = [ False for i in range(0, len(header))]
+        
+        return (header, auth_pub_list)
+
+    def calculate(self, author_name):
+        stats = self.get_author_stats(author_name)
+        author = self.getAuthor(author_name)
+        
+        author.conference_papers = stats[0]
+        author.journal_papers = stats[1]
+        author.books = stats[2]
+        author.book_chapters = stats[3]
+        author.coauthors = stats[8]
+        counter = 0
+        author.first = {}
+        author.last = {}
+        author.sole = {}
+        for pub_type in PublicationType:
+            stats = self.get_author_stats_per_type(author_name, counter)
+            counter += 1
+            author.first[pub_type] = stats[1]
+            author.last[pub_type] = stats[2]
+            author.sole[pub_type] = stats[3]
+        
+        stats = self.get_author_stats_per_type(author_name)
+        author.first["overall"] = stats[1]
+        author.last["overall"] = stats[2]
+        author.sole["overall"] = stats[3]
+        
+    def getAuthor(self, author_name):
+        return self.authors[self.author_idx[author_name]]
+        
+    def get_author_stats_per_type(self, author_name, pub_type=4):            
+        return [str(author_name), self.get_times_as_first(author_name, pub_type),
+                self.get_times_as_last(author_name, pub_type), 
+                self.get_times_as_sole(author_name, pub_type)]                
+
+    def get_author_profile(self, author_name):
+        self.calculate(author_name)
+        author = self.getAuthor(author_name)
+        tables = []
+        table = {}
+        table["rows"] = []
+        table["title"] = "Number of publications" 
+        table["header"] = []
+        table["header"].extend(PublicationType)
+        table["header"].append("Overall")
+        table["rows"].append([author.conference_papers, author.journal_papers, author.books, author.book_chapters, author.total_papers()])
+        tables.extend([table])
+        
+        table={}
+        table["rows"] = []
+        table["title"] = "Number of publications as first Author" 
+        table["header"] = []
+        table["header"].extend(PublicationType)
+        table["header"].append("Overall")
+        table["rows"].append([author.first[PublicationType[0]], author.first[PublicationType[1]],\
+                               author.first[PublicationType[2]], author.first[PublicationType[3]],\
+                                author.first["overall"]])
+        
+        tables.append(table)
+        table = {}
+        table["rows"] = []
+        table["title"] = "Number of publications as last Author" 
+        table["header"] = []
+        table["header"].extend(PublicationType)
+        table["header"].append("Overall")
+        table["rows"].append([author.last[PublicationType[0]], author.last[PublicationType[1]],\
+                               author.last[PublicationType[2]], author.last[PublicationType[3]],\
+                                author.last["overall"]])
+        
+        tables.append(table)
+        table = {}
+        table["rows"] = []
+        table["title"] = "Number of publications as sole Author" 
+        table["header"] = []
+        table["header"].extend(PublicationType)
+        table["header"].append("Overall")
+        table["rows"].append([author.sole[PublicationType[0]], author.sole[PublicationType[1]],\
+                               author.sole[PublicationType[2]], author.sole[PublicationType[3]],\
+                                author.sole["overall"]])
+        tables.append(table)
+        table={}
+        table["rows"] = []
+        table["title"] = "Coauthors" 
+        table["header"] = ["Number of co-authors"]
+        table["rows"].append([author.coauthors])
+        
+        tables.append(table)
+        
+        return tables
+        
+        
+        
 class DocumentHandler(handler.ContentHandler):
     TITLE_TAGS = [ "sub", "sup", "i", "tt", "ref" ]
     PUB_TYPE = {
