@@ -296,8 +296,8 @@ class Database:
 
     
     def sort_cache_generic(self, field):
-        if (self.header_cache[field] == "Author" ):
-            sorted_pubs = sorted(self.cache, key=lambda pub: utils.convertAuthorNameToList(pub[field]),\
+        if (self.header_cache[field] == "Author" or self.header_cache[field] == "Author Name" ):
+            sorted_pubs = sorted(self.cache, key=lambda pub: pub[field],\
                                   reverse = self.sorted_cache[field])
         else:
             
