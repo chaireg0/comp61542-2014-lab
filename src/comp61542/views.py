@@ -272,6 +272,7 @@ def displayAuthorListWithHyperlinks(authors, args):
     db = app.config['DATABASE']
     
     args['title'] = "Search result"
+    db.title_cache = args['title']
     header = ["Author Name"]
     data = [[author.name] for author in authors]
     args['data'] = (header, data)
@@ -287,8 +288,10 @@ def searchAuthorByKeyword():
     authorname = request.args.get('fname')
     
     args = {"dataset":dataset, "id":authorname}
-    authors = db.search_author(authorname)
-    
+    try:
+        authors = db.search_author(authorname)
+    except:
+        return searchPage()
     if (len(authors) == 1):
         author_name = authors[0].name
         return getAuthorProfile(author_name)

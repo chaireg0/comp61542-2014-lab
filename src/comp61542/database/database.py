@@ -555,10 +555,10 @@ class Database:
     
     def search_author(self, search_word):
         authors = []
-        authors.extend(author for author in self.authors if (search_word in author.name))
+        authors.extend(author for author in self.authors if (search_word.lower() in author.name.lower()))
         if len(authors) == 0:
             raise Exception()
-        return authors
+        return sorted(authors, key=lambda author: author.name)
 
     def get_publications_by_type(self, auth_name, pub_type=4):
         pub_list = []
