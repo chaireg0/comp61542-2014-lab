@@ -41,7 +41,7 @@ Publication type:
 	    {% for data_item in row %}
 		    {% if counter == 0 and authorExists %}
 		    {% set author_name = data_item.split(" (")[0] %}
-		      <td><a href="/profile/{{ author_name }}">{{ author_name }}</a></td>
+		      <td><a href="/profile/{{ author_name }}">{{ data_item }}</a></td>
 		    {% set counter = counter+1 %}
 		    {% else %}
 		    	<td>
