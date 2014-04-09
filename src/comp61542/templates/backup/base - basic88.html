@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<title>{% block title %}{% endblock %}</title>
+<meta charset="iso-8859-1">
+<link rel="stylesheet" href="{{ url_for('static', filename='layout.css') }}" type="text/css">
+<!--[if lt IE 9]><script src="scripts/html5shiv.js"></script><![endif]-->
+</head>
+<body>
+<div class="wrapper row1">
+  <header id="header" class="clear">
+    <hgroup>
+      <h1><a href="/">The University of Manchester Academic Publications Dataset</a></h1>
+      <h2 style="font-style:italic">Bringing unique insights to the contributions within the academia community </h2>
+    </hgroup>
+    <nav>
+      <ul>
+      	<div id="navigation">
+          	<li><a href="/">Home</a></li>
+	        <li><a href="statisticsdetails/publication_summary">Publication Summary</a></li>
+	        <li><a href="/statisticsdetails/publication_author">Number of publications per author</a></li>
+	        <li><a href="/statisticsdetails/publication_year">Number of publications per year</a></li>
+	        <li><a href="/statisticsdetails/author_year">Number of authors per year</a></li>
+	        <li><a href="/statisticsdetails/author_first_last_sole">Ordering of ALL authors</a></li>
+	        <li><a href="/firstLastSoleType">Ordering of ALL authors by publication type</a></li>
+	        <li><a href="/averages">Averaged Year Data</a></li>
+	        <li><a href="/coauthors">Co-Authors</a></li>
+	        <li><a href="/publications/year">View all publications</a></li>
+	        <li><a href="/author">First or last author</a></li>
+	        <li><a href="/statisticsdetails/author_first_last_sole">Search author</a></li>
+	        <li class="last"><a href="#"></a></li>
+        </div>
+      </ul>
+    </nav>
+  </header>
+</div>
+<!-- content -->
+<div class="wrapper row2">
+  <div id="container" class="clear">
+    
+    <!-- main content -->
+    <div id="homepage">
+    	
+      {% block default_list %}{% endblock %}
+      <!-- ########################################################################################## -->
+      <!-- ########################################################################################## -->
+      <!-- ########################################################################################## -->
+      <!-- ########################################################################################## -->
+      <!-- Introduction -->
+      
+      <section id="intro" class="last clear">
+        <article>
+            <figcaption>
+            	
+              <h2>{% block page_title %}{% endblock %}</h2>
+              <p>You are now using dataset : {{ args.dataset }}</p>
+              {% block content %}{% endblock %}              
+       
+            </figcaption>
+          
+        </article>
+      </section>
+      <!-- / Introduction -->
+    </div>
+    <!-- / content body -->
+  </div>
+</div>
+<!-- Footer -->
+<div class="wrapper row3">
+  <div id="footer" class="clear">
+
+  </div>
+</div>
+<!-- Copyright -->
+<div class="wrapper row4">
+  <footer id="copyright" class="clear">
+    <p class="fl_left">Copyright &copy; 2014 - All Rights Reserved - Vasilis Nicolaou, Georgios Chairepetis, Lok Shun Justin Chan. <br> Designed for COMP61542 course.</p>
+    <p class="fl_right">Template by <a href="http://www.os-templates.com/" title="Free Website Templates">OS Templates</a></p>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,23 +1,87 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<title>{% block title %}{% endblock %}</title>
+<meta charset="iso-8859-1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="{{ url_for('static', filename='layout/styles/main.css') }}" rel="stylesheet" type="text/css" media="all">
+<link href="{{ url_for('static', filename='layout/styles/mediaqueries.css') }}" rel="stylesheet" type="text/css" media="all"> 
+<!--[if lt IE 9]>
+<link href="layout/styles/ie/ie8.css" rel="stylesheet" type="text/css" media="all">
+<script src="layout/scripts/ie/css3-mediaqueries.min.js"></script>
+<script src="layout/scripts/ie/html5shiv.min.js"></script>
+<![endif]-->
+</head>
+<body class="">
+<div class="wrapper row1">
+  <header id="header" class="full_width clear">
+    <hgroup>
+      <h1><a href="/">The University of Manchester Academic Publications Dataset</a></h1>
+      <h2 style="font-style:italic">Bringing unique insights to the contributions within the academia community</h2>
+    </hgroup>
+  </header>
+</div>
+<!-- ################################################################################################ -->
+<div class="wrapper row2">
+  <nav id="topnav">
+    <ul class="clear">
+      <li class="active"><a href="/" title="Homepage">Homepage</a></li>
+      
+      <li><a class="drop" href="/statisticsdetails/publication_summary">Publications</a>
+        <ul>
+			<li><a href="/statisticsdetails/publication_summary" title="Publication Summary">Publication Summary</a></li>
+			<li><a href="/statisticsdetails/publication_author" title="Number of publications per author">Number of publications per author</a></li>
+			<li><a href="/statisticsdetails/publication_year">Number of publications per year</a></li>
+			<li class="last-child"><a href="/publications/year">View all publications</a></li>	<!-- "View all publications" is used to be one of the last items !-->
+        </ul>
+      </li>
+      <li><a class="drop" href="/authors/search" title="Authors">Authors</a>
+        <ul>
+			<li><a href="/statisticsdetails/author_year">Number of authors per year</a></li>
+			<li><a href="/statisticsdetails/author_first_last_sole">Ordering of ALL authors</a></li>
+			<li><a href="/firstLastSoleType">Ordering of ALL authors by publication type</a></li>
+			<li><a href="/authors/search">Search author</a></li>	<!-- "Search author" is used to be one of the last items !-->
+			<li><a class="last-child" href="/author">Number of times author appeared first or last</a></li>	<!-- "First of last author" is used to be one of the last items !-->
+        </ul>
+      </li>
+		<li><a href="/averages">Mathematical statistics</a></li>
+		<li class="last-child"><a href="/coauthors">Co-Authors</a></li>
+    </ul>
+  </nav>
+</div>
+<!-- content -->
+<div class="wrapper row3">
+  <div id="container">
+    <!-- ################################################################################################ -->
+    <div id="homepage" class="clear">
+      {% block default_list %}{% endblock %}
+      <p>You are now using dataset : {{ args.dataset }}</p>
+      {% block content %}{% endblock %} 
 
-  <head>
-    <title>{% block title %}{% endblock %}</title>
-  </head>
-
-  <body>
-    <div id="page">
-      <div id="header">
-        <h1>COMP61542: {{ args.dataset }}</h1>
-
-        <div id="navigation">
-          <a href="/">Home</a>
-        </div>
-      </div>
-
-      <div id="content">
-        {% block content %}{% endblock %}
-      </div>
     </div>
-  </body>
+    <!-- ################################################################################################ -->
+    <div class="clear"></div>
+  </div>
+</div>
+<!-- Footer -->
+<div class="wrapper row2">
+  <div id="footer" class="clear">
+  </div>
+</div>
+<div class="wrapper row4">
+  <div id="copyright" class="clear">
+    <p class="fl_left">Copyright &copy; 2014 - All Rights Reserved - Vasilis Nicolaou, Georgios Chairepetis, Lok Shun Justin Chan. 
+    	<br> Designed for the COMP61542 course.</p>
+    <p class="fl_right">Template by <a href="http://www.os-templates.com/" title="Free Website Templates">OS Templates</a></p>
+  </div>
+</div>
+<!-- Scripts -->
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script src="http://code.jquery.com/ui/1.10.1/jquery-ui.min.js"></script>
+<script>window.jQuery || document.write('<script src="layout/scripts/jquery-latest.min.js"><\/script>
+<script src="layout/scripts/jquery-ui.min.js"><\/script>')</script>
+<script>jQuery(document).ready(function($){ $('img').removeAttr('width height'); });</script>
+<script src="layout/scripts/jquery-mobilemenu.min.js"></script>
+<script src="layout/scripts/custom.js"></script>
+</body>
 </html>

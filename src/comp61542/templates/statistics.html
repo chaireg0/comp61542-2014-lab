@@ -1,22 +1,113 @@
 {% extends "base.html" %}
-{% block title %}Home{% endblock %}
+{% block title %}The University of Manchester academia data warehouse{% endblock %}
 
 {% block head %}
   {{ super() }}
 {% endblock %}
 
-{% block content %}
-<ul>
-  <li><a href="/statisticsdetails/publication_summary">Publication Summary</a></li>
-  <li><a href="/statisticsdetails/publication_author">Publication by Author</a></li>
-  <li><a href="/statisticsdetails/publication_year">Publication by Year</a></li>
-  <li><a href="/statisticsdetails/author_year">Author by Year</a></li>
-  <li><a href="/statisticsdetails/author_first_last_sole">Author publication statistics</a></li>
-  <li><a href="/firstLastSoleType">Author publication statistics per type</a></li>
-  <li><a href="/averages">Averaged Year Data</a></li>
-  <li><a href="/coauthors">Co-Authors</a></li>
-  <li><a href="/publications/year">Publications sorted by year</a></li>
-  <li><a href="/author">Get how many times an author was first or last</a></li>
-  <li><a href="/authors/search">Search for an author</a></li>
-</ul>
+{% block default_list %}
+
+<p><i>This website serves to present the statistical data of the academic publications published by the academia community of The University of Manchester. 
+This helps users to understand how each researcher has contributed to the academia community.</i></p>
+<p>You are now using dataset : {{ args.dataset }}</p>
+<hr>
+
+<!-- main content -->
+<p><b>You can view the data in one of the following ways:</b></p>
+	<section>
+        <ul class="nospace spacing clear">
+          <li class="one_third first">
+            <article>
+              <div class="boxholder push30"><img src="{{ url_for('static', filename='images/publication_summary.jpg') }}" alt=""></div>
+              <h1>Publications Summary</h1>
+              <p>This thing summarizes everything together. </p>
+              <footer class="read-more"><a href="/statisticsdetails/publication_summary" class="button small orange">Read More &raquo;</a></footer>
+            </article>
+          </li>
+          <li class="one_third">
+            <article>
+              <div class="boxholder push30"><img src="{{ url_for('static', filename='images/number_of_publications_per_author.png') }}" alt=""></div>
+              <h1>Number of publications per author</h1>
+              <p>See how many publications each author published.</p>
+              <footer class="read-more"><a href="/statisticsdetails/publication_author" class="button small orange">Read More &raquo;</a></footer>
+            </article>
+          </li>
+          <li class="one_third last">
+            <article>
+              <div class="boxholder push30"><img src="{{ url_for('static', filename='images/number_of_publications_per_year.jpg') }}" alt=""></div>
+              <h1>Number of publications per year</h1>
+              <p>See how many total publications there are per year.</p>
+              <footer class="read-more"><a href="/statisticsdetails/publication_year" class="button small orange">Read More &raquo;</a></footer>
+            </article>
+          </li>
+          <li class="one_third first">
+            <article>
+              <div class="boxholder push30"><img src="{{ url_for('static', filename='images/number_of_authors_per_year.png') }}" alt=""></div>
+              <h1>Number of authors per year</h1>
+              <p>See how many authors actually publishes their work each year.</p>
+              <footer class="read-more"><a href="/statisticsdetails/author_year" class="button small orange">Read More &raquo;</a></footer>
+            </article>
+          </li>
+          <li class="one_third">
+            <article>
+              <div class="boxholder push30"><img src="{{ url_for('static', filename='images/ordering_of_all_authors.jpg') }}" alt=""></div>
+              <h1>Ordering of ALL authors</h1>
+              <p>See whether an author comes first, last or whether he/she is the only author in publications. 
+              	For example, Igor Tatarinov's name came first in 3 publications, his name came last in 7 publications, 
+              	and there is no single time he published any work alone.</p>
+              <footer class="read-more"><a href="/statisticsdetails/author_first_last_sole" class="button small orange">Read More &raquo;</a></footer>
+            </article>
+          </li>
+          <li class="one_third last">
+            <article>
+              <div class="boxholder push30"><img src="{{ url_for('static', filename='images/ordering_of_all_authors_by_publication_type.gif') }}" alt=""></div>
+              <h1>Ordering of ALL authors by publication type</h1>
+              <p>See whether an author comes first, last or whether he/she is the only author by the type of publication. For example, Alon Y. Haleyy has published 9 publications alone, with no co-authors.</p>
+              <footer class="read-more"><a href="/firstLastSoleType" class="button small orange">Read More &raquo;</a></footer>
+            </article>
+			<li class="one_third first">
+            <article>
+              <div class="boxholder push30"><img src="{{ url_for('static', filename='images/statistical_Mean_Median_Mode_Of_Publication_Sets.jpg') }}" alt=""></div>
+              <h1>Statistical mean/median/mode of publication sets</h1>
+              <p>View the average number, median number and mode of data within a set of publications. For example, you can view how many authors on average there are for all academic journals.</p>
+              <footer class="read-more"><a href="/averages" class="button small orange">Read More &raquo;</a></footer>
+            </article>
+          </li>
+          <li class="one_third">
+            <article>
+              <div class="boxholder push30"><img src="{{ url_for('static', filename='images/number_of_publications_per_year.jpg') }}" alt=""></div>
+              <h1>Co-Authors</h1>
+              <p>See the names of the co-authors per each author, and the number of times they collaborated. For example, you would see Pedro Domingos has published 4 articles with Yoonkyong Lee.</p>
+              <footer class="read-more"><a href="/coauthors" class="button small orange">Read More &raquo;</a></footer>
+            </article>
+          </li>
+          <li class="one_third last">
+            <article>
+              <div class="boxholder push30"><img src="{{ url_for('static', filename='images/view_all_publications.jpg') }}" alt=""></div>
+              <h1>View all publications</h1>
+              <p>View a list that shows ALL publications. It can be sorted in title, type, year or author. </p>
+              <footer class="read-more"><a href="/publications/year" class="button small orange">Read More &raquo;</a></footer>
+            </article>
+          </li>
+          <li class="one_third first">
+            <article>
+              <div class="boxholder push30"><img src="{{ url_for('static', filename='images/first_or_last_author.jpg') }}" alt=""></div>
+              <h1>First or last author</h1>
+              <p>...And view the detailed statistics of that author. </p>
+              <footer class="read-more"><a href="/author" class="button small orange">Read More &raquo;</a></footer>
+            </article>
+          </li>
+          <li class="one_third">
+            <article>
+              <div class="boxholder push30"><img src="{{ url_for('static', filename='images/search_author.png') }}" alt=""></div>
+              <h1>Search author</h1>
+              <p>...And view the detailed statistics of that author, 
+              	such as the number of times his name was on the front of the publication, 
+              	number of co-authors he worked with, all together in one page. </p>
+              <footer class="read-more"><a href="/authors/search" class="button small orange">Read More &raquo;</a></footer>
+            </article>
+          </li>
+        </ul>
+      </section>
+
 {% endblock %}
