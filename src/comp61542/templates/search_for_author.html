@@ -1,5 +1,12 @@
 {% extends "base.html" %}
 {% block title %}{{ args.title }}{% endblock %}
+
+{% block breadcrumb %}
+<a href="/" title="Homepage">Homepage</a> > <a href="/authors/search" title="Authors">Authors</a> >
+<a href="/authors/search">Search author</a>
+{% endblock %}
+
+
 {% block content %}
 
 <h1>{{ args.title }}</h1>
