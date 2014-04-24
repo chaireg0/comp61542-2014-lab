@@ -58,6 +58,8 @@ def showAverages():
     args['tables'] = tables
     return render_template("averages.html", args=args)
 
+
+
 @app.route("/coauthors")
 def showCoAuthors():
     dataset = app.config['DATASET']
@@ -152,6 +154,8 @@ def showPublicationSummary(status):
     db.title_cache = args['title']
     
     return render_template('statistics_details.html', args=args)
+
+
 
 @app.route("/publications/<sortby>")
 def displayPublications(sortby):
@@ -308,6 +312,10 @@ def searchPage():
     args['title'] = 'Search'
     db.title_cache = args['title']
     args['data'] = '/authors/search/author'
+    
+    args['author_search_type'] = 'Search author'
+    args['author_search_type_link'] = '/authors/search'
+    
     return render_template('search.html', args=args)
 
 @app.route("/author")
@@ -318,6 +326,9 @@ def firstlast():
     args['title'] = 'Search'
     db.title_cache = args['title']
     args['data'] = '/author/firstlast'
+    
+    args['author_search_type'] = 'Number of times author appeared first or last'
+    args['author_search_type_link'] = '/author'
     return render_template('search.html', args=args)
 
 def showAllAuthorsFirstLastSole():
