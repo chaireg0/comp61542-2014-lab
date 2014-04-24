@@ -687,6 +687,17 @@ class Database:
         tables.append(table)
         
         return tables
+
+    
+    def generate_degrees_of_separation_graph(self):
+        self.degrees_of_separation_graph = [ [0 for i in range(0, len(self.authors))] for j in range(0, len(self.authors)) ]
+        for pub in self.publications:
+            for authorA in pub.authors:
+                for authorB in pub.authors:
+                    self.degrees_of_separation_graph[authorA][authorB] = 1
+        
+    
+    
         
         
         
