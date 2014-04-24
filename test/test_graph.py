@@ -39,6 +39,11 @@ class Test(unittest.TestCase):
         self.db.generate_degrees_of_separation_graph()
         self.assertEqual(expected_matrix, self.db.degrees_of_separation_graph)
 
+    def test_that_bfs_finds_correct_degree_of_separation(self):
+        self.db.generate_degrees_of_separation_graph()
+        separation = self.db.bfs(self.db.degrees_of_separation_graph, 0, 3)
+        self.assertEqual(2, separation)
+        
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
