@@ -3,7 +3,6 @@ from os import path
 from comp61542.database.database import Author, Publication
 from comp61542.database import database
 from comp61542.statistics import utils
-from comp61542 import views
 import comp61542
 
 class TestSearchAuthorStatistics(unittest.TestCase):
