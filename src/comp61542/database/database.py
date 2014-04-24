@@ -688,14 +688,23 @@ class Database:
         Q=[]
         Q.append(authorA)
         distance = 0
-        
+        visited = [ False for i in range(0, len(self.authors))]
+        visited[0] = True
         while len(Q) > 0:
             distance += 1
-            vector = Q[len(Q) - 1]
-            del Q[len(Q) - 1]
-            for coauthor in [ author for author in self.degreese_of_separation_graph[vector] if author == 1 ]:
+            vector = Q[-1]
+            del Q[-1]
+            print self.degrees_of_separation_graph
+            adjacency_list = [ author for author in range(0, len(self.authors))\
+                               if self.degrees_of_separation_graph[vector][author] == 1 and not visited[author] ]
+            print adjacency_list
+            for coauthor in adjacency_list:
                 if coauthor == authorB:
                     return distance
+                if coauthor not in Q:
+                    Q.append(coauthor)
+                visited[coauthor] = True
+                
         return -1
                     
 
