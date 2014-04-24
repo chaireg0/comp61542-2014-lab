@@ -48,6 +48,9 @@ class Stat:
     MEDIAN = 1
     MODE = 2
 
+def display(db, coauthors, author_id):
+    return "%s (%d)" % (db.authors[author_id].name, len(coauthors[author_id]))
+
 class Database:
 
     def __init__(self):
@@ -88,6 +91,9 @@ class Database:
     def get_all_authors(self):
         return self.author_idx.keys()
 
+
+
+    
     def get_coauthor_data(self, start_year, end_year, pub_type):
         coauthors = {}
         for p in self.publications:
@@ -101,9 +107,7 @@ class Database:
                                 coauthors[a].add(a2)
                             except KeyError:
                                 coauthors[a] = set([a2])
-        def display(db, coauthors, author_id):
-            return "%s (%d)" % (db.authors[author_id].name, len(coauthors[author_id]))
-
+    
         header = ("Author", "Co-Authors")
         self.header_cache = header
         data = []
