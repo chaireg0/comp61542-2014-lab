@@ -1,10 +1,6 @@
 {% extends "base.html" %}
 {% block title %}{{ args.title }}{% endblock %}
 
-{% block breadcrumb %}
-<a href="/" title="Homepage">Homepage</a> > <a href="/averages">Mathematical statistics</a>
-{% endblock %}
-
 {% block content %}
 <h1>{{ args.title }}</h1>
 {% for table in args.tables %}
