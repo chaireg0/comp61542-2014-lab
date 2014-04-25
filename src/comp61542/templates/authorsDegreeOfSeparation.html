@@ -7,13 +7,16 @@
 
 <form name="input" action="/authorsDegreeOfSeparation" method="get" data-ajax="false">
 Author A:
-{% for }
 <select name="authorA">
-  <option value="4">All Publications</option>
+	{% for author_name in args.author_names %}
+	<option>{{ author_name }}</option>
+	{% endfor %}
 </select>
 Author B:
 <select name="authorB">
-  <option value="4">All Publications</option>
+	{% for author_name in args.author_names %}
+	<option>{{ author_name }}</option>
+	{% endfor %}
 </select>
 <input type="submit" value="Submit">
 </form>
@@ -21,20 +24,18 @@ Author B:
 <table>
   <thead>
     <tr>
-    {% for column in args.data[0] %}
+    {% for column in args.columns %}
       <th>{{ column }}</th>
     {% endfor %}
     </tr>
   </thead>
 
   <tbody>
-  {% for row in args.data[1] %}
     <tr>
-    {% for data_item in row %}
-      <td><div align="center">{{ data_item }}</div></td>
-    {% endfor %}
+      <td>{{ args.authorA }}</td>
+      <td>{{ args.authorB }}</td>
+      <td>{{ args.degree_of_separation }}</td>
     </tr>
-  {% endfor %}
   </tbody>
 </table>
 {% endblock %}

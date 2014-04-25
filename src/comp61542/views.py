@@ -161,12 +161,24 @@ def displayDegreeOfSeparation():
     db = app.config['DATABASE']
     args = {"dataset":dataset}
     args["title"] = "Degree Of Separation"
-    author_names = [ author_name for author_name in db.authors_idx.keys() ]
-    args["authors_names"] = author_names
-    db.generate_degrees_of_separation_graph()
-    
-    degree_of_separation=db.degrees_of_separation_graph[authorA][authorB]
-    
+    author_names = [ author.name for author in db.authors ]
+    authors = [ author.name for author in db.authors ]
+    author_A = " - "
+    author_B = " - "
+    degree_of_separation = " - "
+    if "authorA" in request.args and "authorB" in request.args:
+        author_A = request.args.get("authorA")
+        author_B = request.args.get("authorB")
+        db.generate_degrees_of_separation_graph()
+        degree_of_separation=db.degrees_of_separation_graph[authors.index(author_A)][authors.index(author_B)]
+    if degree_of_separation==-1:
+        degree_of_separation="X"
+    args["columns"] = ("Author A", "Author B", "Degree of Separation")
+    args["author_names"] = author_names
+    args["authorA"] = author_A
+    args["authorB"] = author_B
+    args["degree_of_separation"] = degree_of_separation
+    return render_template("authorsDegreeOfSeparation.html", args=args)
 
 @app.route("/publications/<sortby>")
 def displayPublications(sortby):
