@@ -155,7 +155,18 @@ def showPublicationSummary(status):
     
     return render_template('statistics_details.html', args=args)
 
-
+@app.route("/authorsDegreeOfSeparation")
+def displayDegreeOfSeparation():
+    dataset = app.config['DATASET']
+    db = app.config['DATABASE']
+    args = {"dataset":dataset}
+    args["title"] = "Degree Of Separation"
+    author_names = [ author_name for author_name in db.authors_idx.keys() ]
+    args["authors_names"] = author_names
+    db.generate_degrees_of_separation_graph()
+    
+    degree_of_separation=db.degrees_of_separation_graph[authorA][authorB]
+    
 
 @app.route("/publications/<sortby>")
 def displayPublications(sortby):
