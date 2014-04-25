@@ -42,9 +42,9 @@ class Test(unittest.TestCase):
     def test_that_bfs_finds_correct_degree_of_separation(self):
         self.db.generate_degrees_of_separation_graph()
         separation = self.db.bfs(0, 3)
-        self.assertEqual(1, separation)
+        self.assertEqual(0, separation)
         separation = self.db.bfs(1, 3)
-        self.assertEqual(2, separation)
+        self.assertEqual(1, separation)
        
 
 if __name__ == "__main__":
