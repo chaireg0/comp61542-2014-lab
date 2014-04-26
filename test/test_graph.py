@@ -48,6 +48,9 @@ class Test(unittest.TestCase):
         self.assertEqual(1, separation)
         separation = self.db.bfs(4, 3)
         self.assertEqual(-1, separation)
+        separation = self.db.bfs(3, 3)
+        self.assertEqual(0, separation)
+
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']

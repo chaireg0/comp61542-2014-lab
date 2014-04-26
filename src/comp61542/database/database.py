@@ -685,12 +685,14 @@ class Database:
         return tables
 
     def bfs(self, authorA, authorB):
+        if authorA == authorB:
+            return 0
         Q=[]
         Q.append(authorA)
         distance = -1
         visited = [ False for i in range(0, len(self.authors))]
         visited[0] = True
-        print self.degrees_of_separation_graph
+        
         while len(Q) > 0:
             distance += 1
             vector = Q[-1]
