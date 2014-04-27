@@ -297,7 +297,7 @@ class Database:
     
     def sort_cache_generic(self, field):
         if (self.header_cache[field] == "Author" or self.header_cache[field] == "Author Name" ):
-            sorted_pubs = sorted(self.cache, key=lambda pub: pub[field],\
+            sorted_pubs = sorted(self.cache, key=lambda pub: utils.convertAuthorNameToList(pub[field]),\
                                   reverse = self.sorted_cache[field])
         else:
             
@@ -683,6 +683,38 @@ class Database:
         tables.append(table)
         
         return tables
+
+    def bfs(self, authorA, authorB):
+        if authorA == authorB:
+            return 0
+        Q=[]
+        Q.append(authorA)
+        distance = -1
+        visited = [ False for i in range(0, len(self.authors))]
+        visited[0] = True
+        
+        while len(Q) > 0:
+            distance += 1
+            vector = Q[-1]
+            del Q[-1]
+            adjacency_list = [ author for author in range(0, len(self.authors))\
+                               if self.degrees_of_separation_graph[vector][author] == 1 and not visited[author] ]
+            for coauthor in adjacency_list:
+                if coauthor == authorB:
+                    return distance
+                if coauthor not in Q:
+                    Q.append(coauthor)
+                visited[coauthor] = True
+                
+        return -1
+                    
+
+    def generate_degrees_of_separation_graph(self):
+        self.degrees_of_separation_graph = [ [0 for i in range(0, len(self.authors))] for j in range(0, len(self.authors)) ]
+        for pub in self.publications:
+            for authorA in pub.authors:
+                for authorB in pub.authors:
+                    self.degrees_of_separation_graph[authorA][authorB] = 1
         
         
         

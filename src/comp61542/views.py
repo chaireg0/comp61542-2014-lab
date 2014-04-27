@@ -155,7 +155,30 @@ def showPublicationSummary(status):
     
     return render_template('statistics_details.html', args=args)
 
-
+@app.route("/authorsDegreeOfSeparation")
+def displayDegreeOfSeparation():
+    dataset = app.config['DATASET']
+    db = app.config['DATABASE']
+    args = {"dataset":dataset}
+    args["title"] = "Degree Of Separation"
+#    author_names = [ author.name for author in db.authors ]
+#    authors = [ author.name for author in db.authors ]
+    author_A = " - "
+    author_B = " - "
+    degree_of_separation = " - "
+    if "authorA" in request.args and "authorB" in request.args:
+        author_A = request.args.get("authorA")
+        author_B = request.args.get("authorB")
+        db.generate_degrees_of_separation_graph()
+        degree_of_separation=db.bfs(db.author_idx[author_A], db.author_idx[author_B])
+    if degree_of_separation==-1:
+        degree_of_separation="X"
+    args["columns"] = ("Author A", "Author B", "Degree of Separation")
+    args["author_names"] = db.author_idx.keys()
+    args["authorA"] = author_A
+    args["authorB"] = author_B
+    args["degree_of_separation"] = degree_of_separation
+    return render_template("authorsDegreeOfSeparation.html", args=args)
 
 @app.route("/publications/<sortby>")
 def displayPublications(sortby):
@@ -312,6 +335,10 @@ def searchPage():
     args['title'] = 'Search'
     db.title_cache = args['title']
     args['data'] = '/authors/search/author'
+    
+    args['author_search_type'] = 'Search author'
+    args['author_search_type_link'] = '/authors/search'
+    
     return render_template('search.html', args=args)
 
 @app.route("/author")
@@ -322,6 +349,9 @@ def firstlast():
     args['title'] = 'Search'
     db.title_cache = args['title']
     args['data'] = '/author/firstlast'
+    
+    args['author_search_type'] = 'Number of times author appeared first or last'
+    args['author_search_type_link'] = '/author'
     return render_template('search.html', args=args)
 
 def showAllAuthorsFirstLastSole():

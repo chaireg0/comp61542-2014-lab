@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}{{ args.title }}{% endblock %}
+
+{% block content %}
+
+<h1>{{ args.title }}</h1>
+
+<form name="input" action="/authorsDegreeOfSeparation" method="get" data-ajax="false">
+Author A:
+<select name="authorA">
+	{% for author_name in args.author_names %}
+	<option>{{ author_name }}</option>
+	{% endfor %}
+</select>
+Author B:
+<select name="authorB">
+	{% for author_name in args.author_names %}
+	<option>{{ author_name }}</option>
+	{% endfor %}
+</select>
+<input type="submit" value="Submit">
+</form>
+
+<table>
+  <thead>
+    <tr>
+    {% for column in args.columns %}
+      <th>{{ column }}</th>
+    {% endfor %}
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>{{ args.authorA }}</td>
+      <td>{{ args.authorB }}</td>
+      <td>{{ args.degree_of_separation }}</td>
+    </tr>
+  </tbody>
+</table>
+{% endblock %}

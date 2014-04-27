@@ -52,6 +52,7 @@
 <!-- content -->
 <div class="wrapper row3">
   <div id="container">
+  {% block breadcrumb %}{% endblock %}
     <!-- ################################################################################################ -->
     <div id="homepage" class="clear">
       {% block default_list %}{% endblock %}
@@ -64,14 +65,11 @@
   </div>
 </div>
 <!-- Footer -->
-<div class="wrapper row2">
-  <div id="footer" class="clear">
-  </div>
-</div>
+
 <div class="wrapper row4">
   <div id="copyright" class="clear">
     <p class="fl_left">Copyright &copy; 2014 - All Rights Reserved - Vasilis Nicolaou, Georgios Chairepetis, Lok Shun Justin Chan. 
-    	<br> Designed for the COMP61542 course.</p>
+    	<br><br><em> Designed for the COMP61542 software engineering course taught at the School of Computer Science, University of Manchester. </em></p>
     <p class="fl_right">Template by <a href="http://www.os-templates.com/" title="Free Website Templates">OS Templates</a></p>
   </div>
 </div>
