@@ -16,6 +16,8 @@ def format_data(data):
 def showAverages():
     dataset = app.config['DATASET']
     db = app.config['DATABASE']
+    db.set_breadcrump(name="Averages", link= "/averages")
+    
     args = {"dataset":dataset, "id":"averages"}
     args['title'] = "Averaged Data"
     db.title_cache = args['title']
@@ -64,6 +66,8 @@ def showAverages():
 def showCoAuthors():
     dataset = app.config['DATASET']
     db = app.config['DATABASE']
+    db.set_breadcrump(name="coauthors", link= "/coauthors")
+    
     PUB_TYPES = ["Conference Papers", "Journals", "Books", "Book Chapters", "All Publications"]
     args = {"dataset":dataset, "id":"coauthors"}
     args["title"] = "Co-Authors"
@@ -98,6 +102,7 @@ def showCoAuthors():
 def showAuthorFirstLastSolePerType():
     dataset = app.config['DATASET']
     db = app.config['DATABASE']
+    
     PUB_TYPES = ["Conference Papers", "Journals", "Books", "Book Chapters", "All Publications"]
     args = {"dataset":dataset, "id":"firstLastSoleType"}
     args["title"] = "Author First/Last/Sole per publication type"
@@ -118,6 +123,9 @@ def showAuthorFirstLastSolePerType():
 @app.route("/")
 def showStatisticsMenu():
     dataset = app.config['DATASET']
+    db = app.config['DATABASE']
+    db.set_breadcrump(name="Home", link= "/", level=0)
+    
     args = {"dataset":dataset}
     return render_template('statistics.html', args=args)
 
@@ -331,6 +339,7 @@ def searchAuthorByKeyword():
 def searchPage():
     dataset = app.config['DATASET']
     db = app.config['DATABASE']
+    db.set_breadcrump(name="Author search", link="/authors/search")
     args = {"dataset":dataset, "id":'search'}
     args['title'] = 'Search'
     db.title_cache = args['title']
@@ -392,6 +401,7 @@ def showAllAuthorsFirstLastSole():
 def getAuthorProfile(author):
     dataset = app.config['DATASET']
     db = app.config['DATABASE']
+    db.set_breadcrump(name=author, link="/profile/"+author, level=2)
     args = {"dataset":dataset, "id":"coauthors"}
     args['title'] = author + " profile"
     

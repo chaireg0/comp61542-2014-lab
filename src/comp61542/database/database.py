@@ -21,7 +21,6 @@ class Publication:
         else:
             self.year = -1
         self.authors = authors
-
     
     def to_textlist(self):
         authors = ""
@@ -56,6 +55,14 @@ class Database:
         self.sorted_by_year = False
         self.sorted_by_title = False
         self.sorted_by_type = False
+        self.breadcrump = [{"name":"Home", "link":"/"}, None, None]
+    
+    def set_breadcrump(self, name, link, level=1):
+        self.breadcrump[2] = None
+        if level < 1:
+            self.breadcrump[1] = None
+        self.breadcrump[level] = {"name":name, "link":link}
+        
         
     def read(self, filename):
         self.publications = []
