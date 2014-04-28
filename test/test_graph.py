@@ -9,6 +9,7 @@ from os import path
 import comp61542
 from comp61542.database import database
 
+
 class Test(unittest.TestCase):
 
     def setUp(self):
