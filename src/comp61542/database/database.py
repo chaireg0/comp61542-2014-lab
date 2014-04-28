@@ -702,16 +702,16 @@ class Database:
         
         while len(Q) > 0:
             distance += 1
-            vector = Q[-1]
-            del Q[-1]
+            vector = Q[0]
+            del Q[0]
             adjacency_list = [ author for author in range(0, len(self.authors))\
                                if self.degrees_of_separation_graph[vector][author] == 1 and not visited[author] ]
             for coauthor in adjacency_list:
                 if coauthor == authorB:
                     return distance
-                if coauthor not in Q:
+                if not visited[coauthor]:
                     Q.append(coauthor)
-                visited[coauthor] = True
+                    visited[coauthor] = True
                 
         return -1
                     
