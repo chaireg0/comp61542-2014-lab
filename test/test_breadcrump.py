@@ -56,6 +56,17 @@ class Test(unittest.TestCase):
         self.assertEqual(self.db.breadcrump[2]["name"], someauthorname)
         self.assertEqual(self.db.breadcrump[2]["link"], "/profile/" + someauthorname)
         
+        someotherauthorname = self.db.authors[1].name
+        self.app.get("/authorsDegreeOfSeparation")
+        self.assertEqual(self.db.breadcrump[1]["name"], "Degree of separation")
+        self.assertEqual(self.db.breadcrump[1]["link"], "/authorsDegreeOfSeparation")
+        self.assertEqual(self.db.breadcrump[2], None)
+        url = "/authorsDegreeOfSeparation?authorA=" + someauthorname + "&authorB=" + someotherauthorname
+        self.app.get(url)
+        self.assertEqual(self.db.breadcrump[1]["name"], "Degree of separation")
+        self.assertEqual(self.db.breadcrump[1]["link"], "/authorsDegreeOfSeparation")
+        self.assertEqual(self.db.breadcrump[2]["name"], someauthorname + " | " + someotherauthorname )
+        self.assertEqual(self.db.breadcrump[2]["link"], url)
         
         
 if __name__ == "__main__":

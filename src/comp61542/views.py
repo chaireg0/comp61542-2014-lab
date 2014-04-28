@@ -58,6 +58,7 @@ def showAverages():
                 for i in averages ] })
 
     args['tables'] = tables
+    args["breadcrump"] = db.breadcrump
     return render_template("averages.html", args=args)
 
 
@@ -96,13 +97,14 @@ def showCoAuthors():
     args["pub_str"] = PUB_TYPES[pub_type]
     db.args_cache = args
     db.title_cache = args['title']
+    args["breadcrump"] = db.breadcrump
     return render_template("coauthors.html", args=args)
 
 @app.route("/firstLastSoleType")
 def showAuthorFirstLastSolePerType():
     dataset = app.config['DATASET']
     db = app.config['DATABASE']
-    
+    db.set_breadcrump(name="Author order", link="/firstLastSoleType")
     PUB_TYPES = ["Conference Papers", "Journals", "Books", "Book Chapters", "All Publications"]
     args = {"dataset":dataset, "id":"firstLastSoleType"}
     args["title"] = "Author First/Last/Sole per publication type"
@@ -134,11 +136,10 @@ def showPublicationSummary(status):
     dataset = app.config['DATASET']
     db = app.config['DATABASE']
     args = {"dataset":dataset, "id":status}
-    
     if (status == "publication_summary"):
         args["title"] = "Publication Summary"
         args["data"] = db.get_publication_summary()
-    
+        
     if (status == "publication_author"):
         args["title"] = "Author Publication"
         args["data"] = db.get_publications_by_author()
@@ -160,13 +161,15 @@ def showPublicationSummary(status):
         args["data"] = db.get_all_authors_stats(3)
         
     db.title_cache = args['title']
-    
+    db.set_breadcrump(name=args["title"], link="/statisticsdetails/" + status )
+    args["breadcrump"] = db.breadcrump
     return render_template('statistics_details.html', args=args)
 
 @app.route("/authorsDegreeOfSeparation")
 def displayDegreeOfSeparation():
     dataset = app.config['DATASET']
     db = app.config['DATABASE']
+    db.set_breadcrump(name="Degree of separation", link="/authorsDegreeOfSeparation")
     args = {"dataset":dataset}
     args["title"] = "Degree Of Separation"
 #    author_names = [ author.name for author in db.authors ]
@@ -179,6 +182,8 @@ def displayDegreeOfSeparation():
         author_B = request.args.get("authorB")
         db.generate_degrees_of_separation_graph()
         degree_of_separation=db.bfs(db.author_idx[author_A], db.author_idx[author_B])
+        url = "/authorsDegreeOfSeparation?authorA=" + author_A + "&authorB=" + author_B
+        db.set_breadcrump(name=author_A + " | " + author_B, link=url, level=2)
     if degree_of_separation==-1:
         degree_of_separation="X"
     args["columns"] = ("Author A", "Author B", "Degree of Separation")
@@ -186,6 +191,7 @@ def displayDegreeOfSeparation():
     args["authorA"] = author_A
     args["authorB"] = author_B
     args["degree_of_separation"] = degree_of_separation
+    args["breadcrump"] = db.breadcrump
     return render_template("authorsDegreeOfSeparation.html", args=args)
 
 @app.route("/publications/<sortby>")
@@ -240,11 +246,13 @@ def sortByField(field):
     field = int(field)
     args = {"dataset":dataset, "id":field}
     db.sort_cache_generic(field)
+    db.set_breadcrump(name="Order by field: " + db.header_cache[field], link="/stats/"+str(field), level=2)
     args['data'] = (db.header_cache, db.cache)
     try:
         args['title'] = db.title_cache
     except:
         pass #no title cached
+    args["breadcrump"] = db.breadcrump
     return render_template('statistics_details.html', args = args)
 
 @app.route("/stats/coauthors/<field>")
@@ -282,7 +290,7 @@ def sortStatsField(field):
         
     db.title_cache = args['title']
 
-    
+    args["breadcrump"] = db.breadcrump    
     return render_template('authorFirstLastSolePerType.html', args = args)
 
 
@@ -347,7 +355,7 @@ def searchPage():
     
     args['author_search_type'] = 'Search author'
     args['author_search_type_link'] = '/authors/search'
-    
+    args["breadcrump"] = db.breadcrump
     return render_template('search.html', args=args)
 
 @app.route("/author")
@@ -407,4 +415,5 @@ def getAuthorProfile(author):
     
     tables = db.get_author_profile(author)
     args["tables"] = tables
+    args["breadcrump"] = db.breadcrump
     return render_template('author_profile.html',args=args )

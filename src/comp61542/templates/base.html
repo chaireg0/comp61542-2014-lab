@@ -47,8 +47,21 @@
 <!-- content -->
 <div class="wrapper row3">
   <div id="container">
-  {% block breadcrumb %}{% endblock %}
-    <!-- ################################################################################################ -->
+  {% block breadcrumb %}
+	{% if "breadcrump" in args %}
+		{% for entry in args.breadcrump %}
+			{% if loop.index > 1 %}
+				/
+			{% endif %}
+			{% if loop.index == loop.length or args.breadcrump[loop.index] == None %}
+				 {{ entry.name }}
+			{% else %}
+				<a href="{{ entry.link }}" title="{{ entry.name }}">{{ entry.name }}</a>
+			{% endif %}
+		{% endfor %}
+	{% endif %}
+	
+  {% endblock %}  <!-- ################################################################################################ -->
     <div id="homepage" class="clear">
       {% block default_list %}{% endblock %}
       <p>You are now using dataset : {{ args.dataset }}</p>
