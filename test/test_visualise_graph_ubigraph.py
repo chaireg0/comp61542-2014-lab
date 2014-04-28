@@ -4,7 +4,6 @@ Created on 28 Apr 2014
 @author: vnicolao
 '''
 import unittest
-import test_graph
 import xmlrpclib
 import comp61542
 from os import path

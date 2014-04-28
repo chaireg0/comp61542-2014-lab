@@ -696,22 +696,31 @@ class Database:
             return 0
         Q=[]
         Q.append(authorA)
+        
         distance = -1
         visited = [ False for i in range(0, len(self.authors))]
-        visited[0] = True
+        token = -2
         
+        Q.append(token)
         while len(Q) > 0:
-            distance += 1
-            vector = Q[0]
-            del Q[0]
-            adjacency_list = [ author for author in range(0, len(self.authors))\
-                               if self.degrees_of_separation_graph[vector][author] == 1 and not visited[author] ]
-            for coauthor in adjacency_list:
-                if coauthor == authorB:
-                    return distance
-                if not visited[coauthor]:
-                    Q.append(coauthor)
-                    visited[coauthor] = True
+            
+            
+            if Q[0] == authorB:
+                return distance
+            if Q[0] == token:
+                distance+=1
+                Q.append(token)
+                Q.pop(0)
+            if Q[0] != token and not visited[Q[0]]:    
+                visited[Q[0]] = True
+                
+                adjacency_list = [ author for author in range(0, len(self.authors))\
+                                   if self.degrees_of_separation_graph[Q[0]][author] == 1 ]
+                for coauthor in adjacency_list:
+                    if coauthor != Q[0]:
+                        Q.append(coauthor)
+                    
+            Q.pop(0)
                 
         return -1
                     
