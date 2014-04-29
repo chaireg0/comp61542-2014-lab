@@ -696,13 +696,13 @@ class Database:
             return 0
         Q=[]
         Q.append(authorA)
-        
+        print Q, 'queue'
         distance = -1
         visited = [ False for i in range(0, len(self.authors))]
         token = -2
         
         Q.append(token)
-        while len(Q) > 0:
+        while len(Q) > 0 and (not (len(Q) == 1 and token in Q)):
             
             
             if Q[0] == authorB:
@@ -710,18 +710,19 @@ class Database:
             if Q[0] == token:
                 distance+=1
                 Q.append(token)
-                Q.pop(0)
-            if Q[0] != token and not visited[Q[0]]:    
+
+            if not Q[0] == token and not visited[Q[0]]:
                 visited[Q[0]] = True
                 
                 adjacency_list = [ author for author in range(0, len(self.authors))\
-                                   if self.degrees_of_separation_graph[Q[0]][author] == 1 ]
+                                   if self.degrees_of_separation_graph[Q[0]][author] == 1]
+                print adjacency_list, Q[0]
                 for coauthor in adjacency_list:
                     if coauthor != Q[0]:
                         Q.append(coauthor)
                     
             Q.pop(0)
-                
+            print 'new queue', Q    
         return -1
                     
 
