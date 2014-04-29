@@ -187,7 +187,9 @@ def displayDegreeOfSeparation():
     if degree_of_separation==-1:
         degree_of_separation="X"
     args["columns"] = ("Author A", "Author B", "Degree of Separation")
-    args["author_names"] = db.author_idx.keys()
+    author_names = db.author_idx.keys()
+    author_names.sort()
+    args["author_names"] = author_names
     args["authorA"] = author_A
     args["authorB"] = author_B
     args["degree_of_separation"] = degree_of_separation
