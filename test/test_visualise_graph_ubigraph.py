@@ -13,7 +13,7 @@ class Test(unittest.TestCase):
 
     def setUp(self):
         directory, _ = path.split(__file__)
-        data = "dblp_2000_2005_114_papers.xml"
+        data = "dblp_curated_separations.xml"
         comp61542.app.config['TESTING'] = True
         comp61542.app.config['DATASET'] = data
         self.db = database.Database()
