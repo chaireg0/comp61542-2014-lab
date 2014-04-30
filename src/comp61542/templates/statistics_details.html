@@ -2,6 +2,62 @@
 {% block title %}{{ args.title }}{% endblock %}
 
 {% block content %}
+<script type="text/javascript">
+	var graph_data=[];
+	var headers = [];
+	{% for column in args.data[0] %}
+  		{% if column != "Total" %}
+  			headers.push( "{{ column }}" );
+		{% endif %}
+	{% endfor %}
+	var titles = [];
+	{% for row in args.data[1] %}
+		entry = [];
+		{% for data_item in row %}
+    		{% if args.data[0][loop.index0] != "Total" %}
+				{% if loop.index0 != 0 %}
+					entry.push({{ data_item }});
+				{% else %}
+					entry.push("{{ data_item }}");
+				{% endif %}
+			{% endif %}
+    	{% endfor %}
+    	graph_data.push(entry);
+    	
+  	{% endfor %}
+
+</script>
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+
+      // Load the Visualization API and the piechart package.
+      google.load('visualization', '1.0', {'packages':['corechart']});
+
+      
+      // Callback that creates and populates a data table,
+      // instantiates the pie chart, passes in the data and
+      // draws it.
+      function drawChart() {
+
+		var bar_data = [headers];
+        for (gd in graph_data) {
+        	bar_data.push(graph_data[gd]);
+        }
+        var data = google.visualization.arrayToDataTable(bar_data);
+
+        // Set chart options
+        var options = {
+        	width: 600,
+        	height: 400,
+        	legend: { position: 'top', maxLines: 3 },
+			bar: { groupWidth: '75%' },
+        	isStacked: true,
+      	};
+        // Instantiate and draw our chart, passing in some options.
+        var chart = new google.visualization.BarChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+      }
+</script>
 
 <h1>{{ args.title }}</h1>
 
@@ -37,4 +93,7 @@
   {% endfor %}
   </tbody>
 </table>
+<button onclick="drawChart()">Get chart</button>
+
+<div id="chart_div"></div>
 {% endblock %}
