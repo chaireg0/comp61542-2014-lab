@@ -716,7 +716,6 @@ class Database:
                 
                 adjacency_list = [ author for author in range(0, len(self.authors))\
                                    if self.degrees_of_separation_graph[Q[0]][author] == 1]
-                print adjacency_list, Q[0]
                 for coauthor in adjacency_list:
                     if coauthor != Q[0]:
                         Q.append(coauthor)
@@ -724,8 +723,28 @@ class Database:
             Q.pop(0)
             print 'new queue', Q    
         return -1
-                    
-
+                
+    def _dfs(self, depth, limit, node, visited, path):
+        if depth == limit:
+            return None
+        visited[node] = True
+        path[depth].append(node)
+        adjacency_list = [ author for author in range(0, len(self.authors))\
+                                   if self.degrees_of_separation_graph[node][author] == 1]
+        for target in adjacency_list:
+            if target != node:
+                calc_path = self._dfs(depth+1, limit, target, visited, path)
+                if calc_path != None:
+                    if (len(calc_path) - 1 <= limit):
+                        return calc_path
+                    else:
+                        return None
+    
+    def dfs(self, node, limit):
+        visited = [False for i in range(0, len(self.authors))]
+        path = [ [] for i in range(0, limit + 1)]
+        return self._dfs(0, limit, node, visited, path)
+                
     def generate_degrees_of_separation_graph(self):
         self.degrees_of_separation_graph = [ [0 for i in range(0, len(self.authors))] for j in range(0, len(self.authors)) ]
         for pub in self.publications:
