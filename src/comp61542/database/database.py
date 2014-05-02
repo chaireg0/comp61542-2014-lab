@@ -696,7 +696,6 @@ class Database:
             return 0
         Q=[]
         Q.append(authorA)
-        print Q, 'queue'
         distance = -1
         visited = [ False for i in range(0, len(self.authors))]
         token = -2
@@ -721,30 +720,27 @@ class Database:
                         Q.append(coauthor)
                     
             Q.pop(0)
-            print 'new queue', Q    
         return -1
                 
-    def _dfs(self, depth, limit, node, visited, path):
-        if depth == limit:
+    def _dfs(self, source, target, depth, limit, visited, path):
+        if depth >= limit:
             return None
-        visited[node] = True
-        path[depth].append(node)
+        visited[source] = True
+        path[depth].add(source)
         adjacency_list = [ author for author in range(0, len(self.authors))\
-                                   if self.degrees_of_separation_graph[node][author] == 1]
-        for target in adjacency_list:
-            if target != node:
-                calc_path = self._dfs(depth+1, limit, target, visited, path)
-                if calc_path != None:
-                    if (len(calc_path) - 1 <= limit):
-                        return calc_path
-                    else:
-                        return None
+                                   if self.degrees_of_separation_graph[source][author] == 1]
+        for adjacent in adjacency_list:
+            if adjacent != target and not visited[adjacent]:
+                self._dfs(adjacent, target, depth+1, limit, visited, path)
+            elif adjacent == target:
+                path[depth+1].add(adjacent)
+        return path
     
-    def dfs(self, node, limit):
+    def dfs(self, source, target, limit):
         visited = [False for i in range(0, len(self.authors))]
-        path = [ [] for i in range(0, limit + 1)]
-        return self._dfs(0, limit, node, visited, path)
-                
+        path = [ set([]) for i in range(0, limit + 1)]
+        return self._dfs(source, target, 0, limit, visited, path)
+        
     def generate_degrees_of_separation_graph(self):
         self.degrees_of_separation_graph = [ [0 for i in range(0, len(self.authors))] for j in range(0, len(self.authors)) ]
         for pub in self.publications:
