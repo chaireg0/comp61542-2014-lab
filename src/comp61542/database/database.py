@@ -122,7 +122,25 @@ class Database:
         self.header_cache = header
         self.sorted_cache = [ False for i in range(0, len(header))]    
         return (header, data)
-
+    
+    def get_coauthor_names(self, author_name):
+        coauthors_dictionary = {}
+        coauthors_list = []
+        
+        authors = [ author.name for author in self.authors ]
+        author_index = authors.index(author_name)
+        for p in self.publications:
+            if author_index in p.authors:
+                for each_author in p.authors:
+                    coauthors_list.append(authors[each_author])
+        
+        coauthors_list = set(coauthors_list)
+        coauthors_list.remove(author_name)
+        coauthors_dictionary[author_name] = coauthors_list
+        
+        
+        return coauthors_dictionary
+        
     def get_average_authors_per_publication(self, av):
         header = ("Conference Paper", "Journal", "Book", "Book Chapter", "All Publications")
         self.header_cache = header

@@ -1,8 +1,55 @@
 {% extends "base.html" %}
 {% block title %}{{ args.title }}{% endblock %}
 {% block content %}
+	<script type="text/javascript" src="{{ url_for('static', filename='sprint4_user_story_2_scripts/raphael-min.js') }}"></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='sprint4_user_story_2_scripts/dracula_graffle.js') }}"></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='sprint4_user_story_2_scripts/jquery-1.4.2.min.js') }}"></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='sprint4_user_story_2_scripts/dracula_graph.js') }}"></script>
+
 <h1>{{ args.title }}</h1>
+<div id="chart_div"></div>
+
+<script type="text/javascript">
+  	var graph_data_array = [];
+  	var headers_array = []
+</script>
+
 {% for table in args.tables %}
+  	
+<script type="text/javascript">
+	{% set data1 = table.header %}
+	{% set data2 = table.rows %}
+	var graph_data=[];
+	var headers = [];
+	{% for column in data1 %}
+		{% if column != "Overall" %}
+			headers.push( "{{ column }}" );
+		{% endif %}
+	{% endfor %}
+	var titles = [];
+	
+	
+	{% for row in data2 %}
+		entry = [];
+		entry.push("No of publications");
+				
+		{% for data_item in row %}
+			{% if data1[loop.index0] != "Overall" %}
+				{% if loop.index0 != 0 %}
+					entry.push({{ data_item }});
+				{% endif %}
+			{% endif %}
+		{% endfor %}
+		graph_data.push(entry);
+		
+	{% endfor %}
+	graph_data_array.push(graph_data);
+	headers_array.push(headers);
+
+</script>
+
+
+
 <h2>{{ table.title }}</h2>
 <table>
   <thead>
@@ -13,15 +60,109 @@
     </tr>
   </thead>
   <tbody>
-    {% for row in table.rows %}
+  	{% for row in table.rows %}
       <tr>
-        {% for data_item in row %}
+      	{% for data_item in row %}
           <td>{{ data_item }}</td>
         {% endfor %}
       </tr>
     {% endfor %}
   </tbody>
 </table>
+{% if loop.index < loop.length %}
+<button onclick='drawChart({{loop.index0}});'>Get chart</button>
+{% endif %}
 <br/>
 {% endfor %}
+
+
+
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+
+      // Load the Visualization API and the piechart package.
+      google.load('visualization', '1.0', {'packages':['corechart']});
+
+      
+      // Callback that creates and populates a data table,
+      // instantiates the pie chart, passes in the data and
+      // draws it.
+      function drawChart(chart_id) {
+		headers = headers_array[chart_id];
+		var bar_data = [headers];
+		var graph_data = graph_data_array[chart_id];
+        for (gd in graph_data) {
+        	bar_data.push(graph_data[gd]);
+        }
+        var data = google.visualization.arrayToDataTable(bar_data);
+
+        // Set chart options
+        var options = {
+        	width: 600,
+        	height: 400,
+        	legend: { position: 'top', maxLines: 3 },
+			bar: { groupWidth: '75%' },
+        	isStacked: true,
+      	};
+        // Instantiate and draw our chart, passing in some options.
+        var chart = new google.visualization.BarChart(document.getElementById("chart_div"));
+        chart.draw(data, options);
+      }
+</script>
+
+<br/>
+
+<b>Visualization</b>
+
+
+	<script type="text/javascript">
+	var redraw, g, renderer;
+
+	window.onload = function() {
+		
+
+		var width = $(document).width() * (5/6);
+		var number_of_coauthors = {{args.coauthor_names_dictionary[args.real_author_name]|length}};
+		var height = $(document).height() * (number_of_coauthors / 30);
+		g = new Graph();
+		
+		{% for each_coauthor in args.coauthor_names_dictionary[args.real_author_name] %}
+			g.addEdge("{{args.real_author_name}}", "{{each_coauthor}}");
+		{% endfor %}
+		 
+		var layouter = new Graph.Layout.Spring(g);
+		layouter.layout();
+		 
+		/* draw the graph using the RaphaelJS draw implementation */
+		renderer = new Graph.Renderer.Raphael('canvas', g, width, height);
+		renderer.draw();
+	
+		redraw = function() {
+		    layouter.layout();
+		    renderer.draw();
+		};
+		hide = function(id) {
+		    g.nodes[id].hide();
+		};
+		show = function(id) {
+		    g.nodes[id].show();
+		};
+	}
+	</script>
+	
+	{% set counter = 0 %}
+	
+	{{args.real_author_name}}<br /><br />
+	
+	{% for each_coauthor in args.coauthor_names_dictionary[args.real_author_name] %}
+		
+	{% endfor %}
+  	
+
+    <div id="canvas"></div>
+	<button id="redraw" onclick="redraw();">redraw</button>
+	<button id="hide_penguin" onclick="hide('penguin');">hide penguin (beta)</button>
+	<button id="hide_penguin" onclick="show('penguin');">show penguin (beta)</button>
+
+
 {% endblock %}
