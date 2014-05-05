@@ -54,6 +54,7 @@ Shortest Path:
 
 <script type="text/javascript">
 function getCoauthorsGraph() {
+	$("#graph_div").empty();
 	var url = "/graph/{{request.args['authorA']}}/{{request.args['authorB']}}";
 	$.getJSON(url, function (graph) {
 		
