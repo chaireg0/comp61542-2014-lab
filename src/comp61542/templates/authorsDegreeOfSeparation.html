@@ -3,21 +3,19 @@
 
 {% block content %}
 
-<script type="text/javascript" src="/home/mbax9gc2/Downloads/strathausen-dracula-a6a5fa7/js/raphael-min.js"></script>
-<script type="text/javascript" src="/home/mbax9gc2/Downloads/strathausen-dracula-a6a5fa7/js/dracula_graffle.js"></script>
-<script type="text/javascript" src="/home/mbax9gc2/Downloads/strathausen-dracula-a6a5fa7/js/jquery-1.4.2.min.js"></script>
-<script type="text/javascript" src="/home/mbax9gc2/Downloads/strathausen-dracula-a6a5fa7/js/dracula_graph.js"></script>
-<script type="text/javascript" src="/home/mbax9gc2/Downloads/strathausen-dracula-a6a5fa7/js/dracula_algorithms.js"></script>
-<script type="text/javascript" src="/home/mbax9gc2/Downloads/strathausen-dracula-a6a5fa7/js/Curry-1.0.1.js"></script>
-<script type="text/javascript" src="/home/mbax9gc2/Downloads/strathausen-dracula-a6a5fa7/js/seedrandom.js"></script>
+<script type="text/javascript" src="../static/js/raphael-min.js"></script>
+<script type="text/javascript" src="../static//js/dracula_graffle.js"></script>
+<script type="text/javascript" src="../static/js/jquery-1.4.2.min.js"></script>
+<script type="text/javascript" src="../static/js/dracula_graph.js"></script>
+<script type="text/javascript" src="../static/js/dracula_algorithms.js"></script>
+<script type="text/javascript" src="../static/js/Curry-1.0.1.js"></script>
+<script type="text/javascript" src="../static/js/seedrandom.js"></script>
 
 <script type="text/javascript">
 function getCoauthorsGraph() {
+	alert("asdfasdfasdf");
     var g = new Graph();
     g.edgeFactory.template.style.directed = true;
-    {% for eachNode in args.nodes_list %}
-    	g.addNode("{{ eachNode }}");
-    {% endfor %}
     {% for eachEdge in args.edges_list %}
     {% set leftNode=eachEdge[0] %}
     {% set rightNode=eachEdge[1] %}

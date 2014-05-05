@@ -108,7 +108,6 @@ def showAuthorFirstLastSolePerType():
     PUB_TYPES = ["Conference Papers", "Journals", "Books", "Book Chapters", "All Publications"]
     args = {"dataset":dataset, "id":"firstLastSoleType"}
     args["title"] = "Author First/Last/Sole per publication type"
-    args['breadcrump'] = db.breadcrump
     
     db.title_cache = args['title']
     
@@ -222,9 +221,6 @@ def displayPublications(sortby):
         
     args["data"] = db.get_publication_list()
     db.title_cache = args['title']
-    
-    db.set_breadcrump(name="Publications", link="/publications/<sortby>")
-
     
     return render_template('publications.html', args=args)
 
@@ -379,10 +375,6 @@ def firstlast():
     
     args['author_search_type'] = 'Number of times author appeared first or last'
     args['author_search_type_link'] = '/author'
-    
-    db.set_breadcrump(name="Author search", link="/author")
-    args["breadcrump"] = db.breadcrump
-    
     return render_template('search.html', args=args)
 
 def showAllAuthorsFirstLastSole():
@@ -426,12 +418,8 @@ def getAuthorProfile(author):
     db.set_breadcrump(name=author, link="/profile/"+author, level=2)
     args = {"dataset":dataset, "id":"coauthors"}
     args['title'] = author + " profile"
-    args['real_author_name'] = author
     
     tables = db.get_author_profile(author)
     args["tables"] = tables
     args["breadcrump"] = db.breadcrump
-    
-    args["coauthor_names_dictionary"] = db.get_coauthor_names(author)
-    
     return render_template('author_profile.html',args=args )
