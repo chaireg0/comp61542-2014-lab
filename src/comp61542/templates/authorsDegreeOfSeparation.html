@@ -7,13 +7,9 @@
 <script type="text/javascript" src="../static//js/dracula_graffle.js"></script>
 <script type="text/javascript" src="../static/js/jquery-1.4.2.min.js"></script>
 <script type="text/javascript" src="../static/js/dracula_graph.js"></script>
-<script type="text/javascript" src="../static/js/dracula_algorithms.js"></script>
-<script type="text/javascript" src="../static/js/Curry-1.0.1.js"></script>
-<script type="text/javascript" src="../static/js/seedrandom.js"></script>
 
 <script type="text/javascript">
 function getCoauthorsGraph() {
-	alert("asdfasdfasdf");
     var g = new Graph();
     g.edgeFactory.template.style.directed = true;
     {% for eachEdge in args.edges_list %}
@@ -21,7 +17,8 @@ function getCoauthorsGraph() {
     {% set rightNode=eachEdge[1] %}
     	g.addEdge("{{ leftNode }}", "{{ rightNode }}");
     {% endfor %}
-    var layouter = new Graph.Layout.Ordered(g, topological_sort(g));
+    var layouter = new Graph.Layout.Spring(g);
+    layouter.layout();
     var renderer = new Graph.Renderer.Raphael(document.getElementById('graph_div'), 400, 300);
     renderer.draw();
 }
