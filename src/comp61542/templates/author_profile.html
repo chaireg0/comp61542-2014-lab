@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 {% block title %}{{ args.title }}{% endblock %}
 {% block content %}
+	<script type="text/javascript" src="{{ url_for('static', filename='sprint4_user_story_2_scripts/raphael-min.js') }}"></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='sprint4_user_story_2_scripts/dracula_graffle.js') }}"></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='sprint4_user_story_2_scripts/jquery-1.4.2.min.js') }}"></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='sprint4_user_story_2_scripts/dracula_graph.js') }}"></script>
+
 <h1>{{ args.title }}</h1>
 {% for table in args.tables %}
 <h2>{{ table.title }}</h2>
@@ -24,4 +29,61 @@
 </table>
 <br/>
 {% endfor %}
+
+
+<br/>
+
+<b>Visualization</b>
+
+
+	<script>
+	var redraw, g, renderer;
+
+	window.onload = function() {
+		
+
+		var width = $(document).width() * (5/6);
+		var number_of_coauthors = {{args.coauthor_names_dictionary[args.real_author_name]|length}};
+		var height = $(document).height() * (number_of_coauthors / 30);
+		g = new Graph();
+		
+		{% for each_coauthor in args.coauthor_names_dictionary[args.real_author_name] %}
+			g.addEdge("{{args.real_author_name}}", "{{each_coauthor}}");
+		{% endfor %}
+		 
+		var layouter = new Graph.Layout.Spring(g);
+		layouter.layout();
+		 
+		/* draw the graph using the RaphaelJS draw implementation */
+		renderer = new Graph.Renderer.Raphael('canvas', g, width, height);
+		renderer.draw();
+	
+		redraw = function() {
+		    layouter.layout();
+		    renderer.draw();
+		};
+		hide = function(id) {
+		    g.nodes[id].hide();
+		};
+		show = function(id) {
+		    g.nodes[id].show();
+		};
+	}
+	</script>
+	
+	{% set counter = 0 %}
+	
+	{{args.real_author_name}}<br /><br />
+	
+	{% for each_coauthor in args.coauthor_names_dictionary[args.real_author_name] %}
+		
+	{% endfor %}
+  	
+
+    <div id="canvas"></div>
+	<button id="redraw" onclick="redraw();">redraw</button>
+	<button id="hide_penguin" onclick="hide('penguin');">hide penguin (beta)</button>
+	<button id="hide_penguin" onclick="show('penguin');">show penguin (beta)</button>
+
+
 {% endblock %}
