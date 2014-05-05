@@ -43,8 +43,18 @@
 		
 
 		var width = $(document).width() * (5/6);
+		
+		/* just to readjust the height if it becomes too wide*/
+		if (width > 1000) {
+			width = 1000;
+		}
 		var number_of_coauthors = {{args.coauthor_names_dictionary[args.real_author_name]|length}};
 		var height = $(document).height() * (number_of_coauthors / 30);
+		
+		/* just to readjust the height if it becomes too tall*/
+		if (height > 1400) {
+			height = 1400;
+		}
 		g = new Graph();
 		
 		{% for each_coauthor in args.coauthor_names_dictionary[args.real_author_name] %}
@@ -82,8 +92,5 @@
 
     <div id="canvas"></div>
 	<button id="redraw" onclick="redraw();">redraw</button>
-	<button id="hide_penguin" onclick="hide('penguin');">hide penguin (beta)</button>
-	<button id="hide_penguin" onclick="show('penguin');">show penguin (beta)</button>
-
 
 {% endblock %}
