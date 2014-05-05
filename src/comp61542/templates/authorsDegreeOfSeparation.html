@@ -3,15 +3,14 @@
 
 {% block content %}
 
-<script type="text/javascript" src="../static/js/raphael-min.js"></script>
-<script type="text/javascript" src="../static//js/dracula_graffle.js"></script>
-<script type="text/javascript" src="../static/js/jquery-1.4.2.min.js"></script>
-<script type="text/javascript" src="../static/js/dracula_graph.js"></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='sprint4_user_story_2_scripts/raphael-min.js') }}"></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='sprint4_user_story_2_scripts/dracula_graffle.js') }}"></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='sprint4_user_story_2_scripts/jquery-1.4.2.min.js') }}"></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='sprint4_user_story_2_scripts/dracula_graph.js') }}"></script>
 
 <script type="text/javascript">
 function getCoauthorsGraph() {
     var g = new Graph();
-    g.edgeFactory.template.style.directed = true;
     {% for eachEdge in args.edges_list %}
     {% set leftNode=eachEdge[0] %}
     {% set rightNode=eachEdge[1] %}

@@ -183,12 +183,16 @@ def displayDegreeOfSeparation():
         db.generate_degrees_of_separation_graph()
         degree_of_separation=db.bfs(db.author_idx[author_A], db.author_idx[author_B])
         nodes_list, edges_list=db.getArrayForGraph(db.author_idx[author_A], db.author_idx[author_B], degree_of_separation+1)
-        args["nodes_list"] = nodes_list
-        args["edges_list"] = edges_list
         url = "/authorsDegreeOfSeparation?authorA=" + author_A + "&authorB=" + author_B
         db.set_breadcrump(name=author_A + " | " + author_B, link=url, level=2)
     if degree_of_separation==-1:
         degree_of_separation="X"
+    if degree_of_separation==-1:  
+        args["nodes_list"] = nodes_list
+        args["edges_list"] = edges_list
+    else:
+        args["nodes_list"] = "X"
+        args["edges_list"] = "X"
     args["columns"] = ("Author A", "Author B", "Degree of Separation")
     author_names = db.author_idx.keys()
     author_names.sort()
@@ -417,8 +421,12 @@ def getAuthorProfile(author):
     db.set_breadcrump(name=author, link="/profile/"+author, level=2)
     args = {"dataset":dataset, "id":"coauthors"}
     args['title'] = author + " profile"
+    args['real_author_name'] = author
     
     tables = db.get_author_profile(author)
     args["tables"] = tables
     args["breadcrump"] = db.breadcrump
+    
+    args["coauthor_names_dictionary"] = db.get_coauthor_names(author)
+    
     return render_template('author_profile.html',args=args )
