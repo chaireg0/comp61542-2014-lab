@@ -740,7 +740,25 @@ class Database:
         visited = [False for i in range(0, len(self.authors))]
         path = [ set([]) for i in range(0, limit + 1)]
         return self._dfs(source, target, 0, limit, visited, path)
+    
+    def getArrayForGraph(self, source, target, limit):
+        graphOrigin = self.dfs(source, target, limit)
+        nodesList=[]
+        for eachLevel in graphOrigin:
+            for eachNode in eachLevel:
+                if eachNode not in nodesList:
+                    nodesList.append(eachNode)
+        edgesList=[]
+        previousLevel = graphOrigin[0]
+        for eachLevel in graphOrigin:
+            if eachLevel != graphOrigin[0]:
+                for eachNode in eachLevel:
+                    for eachPreviousNode in previousLevel:
+                        edgesList.append([eachPreviousNode, eachNode])
+            previousLevel = eachLevel
+        return nodesList, edgesList
         
+            
     def generate_degrees_of_separation_graph(self):
         self.degrees_of_separation_graph = [ [0 for i in range(0, len(self.authors))] for j in range(0, len(self.authors)) ]
         for pub in self.publications:
