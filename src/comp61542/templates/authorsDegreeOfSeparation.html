@@ -3,6 +3,32 @@
 
 {% block content %}
 
+<script type="text/javascript" src="/home/mbax9gc2/Downloads/strathausen-dracula-a6a5fa7/js/raphael-min.js"></script>
+<script type="text/javascript" src="/home/mbax9gc2/Downloads/strathausen-dracula-a6a5fa7/js/dracula_graffle.js"></script>
+<script type="text/javascript" src="/home/mbax9gc2/Downloads/strathausen-dracula-a6a5fa7/js/jquery-1.4.2.min.js"></script>
+<script type="text/javascript" src="/home/mbax9gc2/Downloads/strathausen-dracula-a6a5fa7/js/dracula_graph.js"></script>
+<script type="text/javascript" src="/home/mbax9gc2/Downloads/strathausen-dracula-a6a5fa7/js/dracula_algorithms.js"></script>
+<script type="text/javascript" src="/home/mbax9gc2/Downloads/strathausen-dracula-a6a5fa7/js/Curry-1.0.1.js"></script>
+<script type="text/javascript" src="/home/mbax9gc2/Downloads/strathausen-dracula-a6a5fa7/js/seedrandom.js"></script>
+
+<script type="text/javascript">
+function getCoauthorsGraph() {
+    var g = new Graph();
+    g.edgeFactory.template.style.directed = true;
+    {% for eachNode in args.nodes_list %}
+    	g.addNode("{{ eachNode }}");
+    {% endfor %}
+    {% for eachEdge in args.edges_list %}
+    {% set leftNode=eachEdge[0] %}
+    {% set rightNode=eachEdge[1] %}
+    	g.addEdge("{{ leftNode }}", "{{ rightNode }}");
+    {% endfor %}
+    var layouter = new Graph.Layout.Ordered(g, topological_sort(g));
+    var renderer = new Graph.Renderer.Raphael(document.getElementById('graph_div'), 400, 300);
+    renderer.draw();
+}
+</script>
+
 <h1>{{ args.title }}</h1>
 
 <form name="input" action="/authorsDegreeOfSeparation" method="get" data-ajax="false">
@@ -19,6 +45,7 @@ Author B:
 	{% endfor %}
 </select>
 <input type="submit" value="Submit">
+
 </form>
 
 <table>
@@ -38,4 +65,8 @@ Author B:
     </tr>
   </tbody>
 </table>
+
+Shortest Path:
+<button onclick="getCoauthorsGraph()">Get coauthors graph</button>
+<div id="graph_div"></div>
 {% endblock %}

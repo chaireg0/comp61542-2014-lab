@@ -63,6 +63,12 @@ class Test(unittest.TestCase):
         g_path = self.db.dfs(3, 1, separation+1)
         self.assertEqual([set([3]),set([0, 2]), set([1])], g_path)
         
+        '''create different lists for nodes and edges'''
+        separation = self.db.bfs(3, 1)
+        g_nodes, g_edges = self.db.getArrayForGraph(3, 1, separation+1)
+        self.assertEqual([3, 0, 2, 1], g_nodes)
+        self.assertEqual([[3, 0], [3, 2], [0, 1], [2, 1]], g_edges)
+        
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()
