@@ -3,7 +3,42 @@
 
 {% block content %}
 <h1>{{ args.title }}</h1>
+<div id="chart_div"></div>
+
+<script type="text/javascript">
+  	var graph_data_array = [];
+  	var headers_array = [];
+  	var titles = [];
+</script>
+
 {% for table in args.tables %}
+<script type="text/javascript">
+	{% set data1 = table.header %}
+	{% set data2 = table.rows %}
+	var graph_data=[];
+	var headers = [];
+	{% for column in data1 %}
+			headers.push( "{{ column }}" );
+	{% endfor %}
+	titles.push("{{table.title}}");	
+	
+	{% for row in data2 %}
+		entry = [];
+		{% for data_item in row %}
+				{% if loop.index0 > 0 %}
+					entry.push({{ data_item }});
+				{% else %}
+					entry.push("{{ data_item }}");
+				{% endif %}
+		{% endfor %}
+		graph_data.push(entry);
+		
+	{% endfor %}
+	graph_data_array.push(graph_data);
+	headers_array.push(headers);
+
+</script>
+
 <h2>{{ table.title }}</h2>
 <table>
   <thead>
@@ -14,7 +49,7 @@
     </tr>
   </thead>
   <tbody>
-    {% for row in table.rows %}    
+    {% for row in table.rows %}
       <tr>
         {% for data_item in row %}
           <td>{{ data_item }}</td>
@@ -23,6 +58,43 @@
     {% endfor %}
   </tbody>
 </table>
+<button onclick='drawChart({{loop.index0}});'>Get chart</button>
 <br/>
 {% endfor %}
+
+
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+
+      // Load the Visualization API and the piechart package.
+      google.load('visualization', '1.0', {'packages':['corechart']});
+
+      
+      // Callback that creates and populates a data table,
+      // instantiates the pie chart, passes in the data and
+      // draws it.
+      function drawChart(chart_id) {
+		headers = headers_array[chart_id];
+		var bar_data = [headers];
+		var graph_data = graph_data_array[chart_id];
+        for (gd=0; gd <graph_data.length - 1; gd++) {
+        	bar_data.push(graph_data[gd]);
+        }
+        var data = google.visualization.arrayToDataTable(bar_data);
+
+        // Set chart options
+        var options = {
+        	width: 600,
+        	height: 400,
+        	legend: { position: 'top', maxLines: 3 },
+			bar: { groupWidth: '75%' },
+        	isStacked: true,
+        	title: titles[chart_id]
+      	};
+        // Instantiate and draw our chart, passing in some options.
+        var chart = new google.visualization.BarChart(document.getElementById("chart_div"));
+        chart.draw(data, options);
+      }
+</script>
+
 {% endblock %}
