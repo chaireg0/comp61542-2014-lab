@@ -2,6 +2,8 @@ from comp61542 import app
 from database import database
 from flask import (render_template, request)
 from comp61542.statistics import utils
+import json
+from flask.json import jsonify
 def format_data(data):
     fmt = "%.2f"
     result = []
@@ -177,22 +179,19 @@ def displayDegreeOfSeparation():
     author_A = " - "
     author_B = " - "
     degree_of_separation = " - "
+    args["graph_js"] = None
+    db.cache_graph = None
     if "authorA" in request.args and "authorB" in request.args:
         author_A = request.args.get("authorA")
         author_B = request.args.get("authorB")
         db.generate_degrees_of_separation_graph()
         degree_of_separation=db.bfs(db.author_idx[author_A], db.author_idx[author_B])
-        nodes_list, edges_list=db.getArrayForGraph(db.author_idx[author_A], db.author_idx[author_B], degree_of_separation+1)
         url = "/authorsDegreeOfSeparation?authorA=" + author_A + "&authorB=" + author_B
         db.set_breadcrump(name=author_A + " | " + author_B, link=url, level=2)
+        graph = db.dfs(db.author_idx[author_A], db.author_idx[author_B], degree_of_separation+1)
+        db.cache_graph = graph
     if degree_of_separation==-1:
         degree_of_separation="X"
-    if degree_of_separation==-1:  
-        args["nodes_list"] = nodes_list
-        args["edges_list"] = edges_list
-    else:
-        args["nodes_list"] = "X"
-        args["edges_list"] = "X"
     args["columns"] = ("Author A", "Author B", "Degree of Separation")
     author_names = db.author_idx.keys()
     author_names.sort()
@@ -201,7 +200,17 @@ def displayDegreeOfSeparation():
     args["authorB"] = author_B
     args["degree_of_separation"] = degree_of_separation
     args["breadcrump"] = db.breadcrump
+    
+    
     return render_template("authorsDegreeOfSeparation.html", args=args)
+
+@app.route("/graph/<authora>/<authorb>")
+def getGraph(authora, authorb):
+    db = app.config['DATABASE']
+    db.generate_degrees_of_separation_graph()
+    degree_of_separation=db.bfs(db.author_idx[authora], db.author_idx[authorb])
+    graph = db.dfs(db.author_idx[authora], db.author_idx[authorb], degree_of_separation+1)
+    return jsonify(db.convertIDGraphToNames(graph))
 
 @app.route("/publications/<sortby>")
 def displayPublications(sortby):
@@ -421,12 +430,8 @@ def getAuthorProfile(author):
     db.set_breadcrump(name=author, link="/profile/"+author, level=2)
     args = {"dataset":dataset, "id":"coauthors"}
     args['title'] = author + " profile"
-    args['real_author_name'] = author
     
     tables = db.get_author_profile(author)
     args["tables"] = tables
     args["breadcrump"] = db.breadcrump
-    
-    args["coauthor_names_dictionary"] = db.get_coauthor_names(author)
-    
     return render_template('author_profile.html',args=args )

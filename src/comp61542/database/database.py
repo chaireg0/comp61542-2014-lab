@@ -742,29 +742,35 @@ class Database:
                 
     def _dfs(self, source, target, depth, limit, visited, path):
         if depth >= limit:
-            return None
+            return False
         visited[source] = True
         if source not in path:
             path[source] = set([])
         adjacency_list = [ author for author in range(0, len(self.authors))\
                                    if self.degrees_of_separation_graph[source][author] == 1]
-        
+        gotIt = False
         for adjacent in adjacency_list:
             if adjacent != target and not visited[adjacent]:
-                path[source].add(adjacent)
-                np = self._dfs(adjacent, target, depth+1, limit, visited, path)
-                if np == None:
-                    path[source].remove(adjacent)
+                gotIt2 = self._dfs(adjacent, target, depth+1, limit, visited, path)
+                if gotIt2:
+                    path[source].add(adjacent)
+                else:
+                    visited[adjacent] = False
+                gotIt = gotIt2 or gotIt
             elif adjacent == target:
                 path[source] = set([adjacent])
-                break
-        return path
-    
+                gotIt = True
+                     
+        return gotIt
+        
     def dfs(self, source, target, limit):
         visited = [False for i in range(0, len(self.authors))]
         path = {}
-        return self._dfs(source, target, 0, limit, visited, path)
-    
+        path_exists = self._dfs(source, target, 0, limit, visited, path)
+        if path_exists:
+            return path
+        else:
+            return {}
     def convertIDGraphToNames(self, graph):
         s_graph = {}
         for node in graph:
