@@ -744,39 +744,35 @@ class Database:
         if depth >= limit:
             return None
         visited[source] = True
-        path[depth].add(source)
+        if source not in path:
+            path[source] = set([])
         adjacency_list = [ author for author in range(0, len(self.authors))\
                                    if self.degrees_of_separation_graph[source][author] == 1]
+        
         for adjacent in adjacency_list:
             if adjacent != target and not visited[adjacent]:
-                self._dfs(adjacent, target, depth+1, limit, visited, path)
+                path[source].add(adjacent)
+                np = self._dfs(adjacent, target, depth+1, limit, visited, path)
+                if np == None:
+                    path[source].remove(adjacent)
             elif adjacent == target:
-                path[depth+1].add(adjacent)
+                path[source] = set([adjacent])
+                break
         return path
     
     def dfs(self, source, target, limit):
         visited = [False for i in range(0, len(self.authors))]
-        path = [ set([]) for i in range(0, limit + 1)]
+        path = {}
         return self._dfs(source, target, 0, limit, visited, path)
     
-    def getArrayForGraph(self, source, target, limit):
-        graphOrigin = self.dfs(source, target, limit)
-        nodesList=[]
-        for eachLevel in graphOrigin:
-            for eachNode in eachLevel:
-                if eachNode not in nodesList:
-                    nodesList.append(eachNode)
-        edgesList=[]
-        previousLevel = graphOrigin[0]
-        for eachLevel in graphOrigin:
-            if eachLevel != graphOrigin[0]:
-                for eachNode in eachLevel:
-                    for eachPreviousNode in previousLevel:
-                        edgesList.append([eachPreviousNode, eachNode])
-            previousLevel = eachLevel
-        return nodesList, edgesList
-        
-            
+    def convertIDGraphToNames(self, graph):
+        s_graph = {}
+        for node in graph:
+            s_graph[self.authors[node].name] = []
+            for edge in graph[node]:
+                s_graph[self.authors[node].name].append(self.authors[edge].name)
+        return s_graph
+    
     def generate_degrees_of_separation_graph(self):
         self.degrees_of_separation_graph = [ [0 for i in range(0, len(self.authors))] for j in range(0, len(self.authors)) ]
         for pub in self.publications:

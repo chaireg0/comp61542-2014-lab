@@ -57,17 +57,12 @@ class Test(unittest.TestCase):
         self.db.generate_degrees_of_separation_graph()
         separation = self.db.bfs(0, 3)
         g_path = self.db.dfs(0, 3, separation+1)
-        self.assertEqual([set([0]),set([3])], g_path)
+        self.assertEqual({0:set([3])}, g_path)
         
         separation = self.db.bfs(3, 1)
         g_path = self.db.dfs(3, 1, separation+1)
-        self.assertEqual([set([3]),set([0, 2]), set([1])], g_path)
+        self.assertEqual({3:set([0, 2]), 0:set([1]), 2:set([1])}, g_path)
         
-        '''create different lists for nodes and edges'''
-        separation = self.db.bfs(3, 1)
-        g_nodes, g_edges = self.db.getArrayForGraph(3, 1, separation+1)
-        self.assertEqual([3, 0, 2, 1], g_nodes)
-        self.assertEqual([[3, 0], [3, 2], [0, 1], [2, 1]], g_edges)
         
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
