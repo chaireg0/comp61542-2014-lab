@@ -11,14 +11,16 @@
 <script type="text/javascript">
 function getCoauthorsGraph() {
     var g = new Graph();
-    {% for eachEdge in args.edges_list %}
-    {% set leftNode=eachEdge[0] %}
-    {% set rightNode=eachEdge[1] %}
-    	g.addEdge("{{ leftNode }}", "{{ rightNode }}");
+    {% set dictKeys=args.shortest_path.keys() %}
+    {% for currKey in dictKeys %}
+    	{% set currSource=currKey %}
+    	{% for currDest in args.shortest_path[currKey] %}
+    		g.addEdge("{{ currSource }}", "{{ currDest }}");
+    	{% endfor %}
     {% endfor %}
     var layouter = new Graph.Layout.Spring(g);
     layouter.layout();
-    var renderer = new Graph.Renderer.Raphael(document.getElementById('graph_div'), 400, 300);
+    var renderer = new Graph.Renderer.Raphael('graph_div', g, 400, 300);
     renderer.draw();
 }
 </script>

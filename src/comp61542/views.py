@@ -182,24 +182,23 @@ def displayDegreeOfSeparation():
         author_B = request.args.get("authorB")
         db.generate_degrees_of_separation_graph()
         degree_of_separation=db.bfs(db.author_idx[author_A], db.author_idx[author_B])
-        nodes_list, edges_list=db.getArrayForGraph(db.author_idx[author_A], db.author_idx[author_B], degree_of_separation+1)
+        shortestPathGraph=db.dfs(db.author_idx[author_A], db.author_idx[author_B], degree_of_separation+1)
+        shortestPathDict=db.convertIDGraphToNames(shortestPathGraph)
+        args["shortest_path"]=shortestPathDict
         url = "/authorsDegreeOfSeparation?authorA=" + author_A + "&authorB=" + author_B
         db.set_breadcrump(name=author_A + " | " + author_B, link=url, level=2)
     if degree_of_separation==-1:
         degree_of_separation="X"
-    if degree_of_separation==-1:  
-        args["nodes_list"] = nodes_list
-        args["edges_list"] = edges_list
+        args["shortest_path"]="X"
     else:
-        args["nodes_list"] = "X"
-        args["edges_list"] = "X"
+        args["degree_of_separation"] = degree_of_separation
+        args["shortest_path"]=shortestPathDict
     args["columns"] = ("Author A", "Author B", "Degree of Separation")
     author_names = db.author_idx.keys()
     author_names.sort()
     args["author_names"] = author_names
     args["authorA"] = author_A
     args["authorB"] = author_B
-    args["degree_of_separation"] = degree_of_separation
     args["breadcrump"] = db.breadcrump
     return render_template("authorsDegreeOfSeparation.html", args=args)
 
