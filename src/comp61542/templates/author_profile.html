@@ -126,7 +126,8 @@
 			width = 1000;
 		}
 		var number_of_coauthors = {{args.coauthor_names_dictionary[args.real_author_name]|length}};
-		var height = $(document).height() * (number_of_coauthors / 30);
+
+		var height = $(document).height() * (number_of_coauthors / 30) + 40;
 
 		/* just to readjust the height if it becomes too tall*/
 		if (height > 1400) {
