@@ -53,6 +53,17 @@ class Test(unittest.TestCase):
         self.assertEqual(0, separation)
 
 
+    def test_that_dfs_finds_all_possible_paths_with_given_length_from_source_to_target(self):
+        self.db.generate_degrees_of_separation_graph()
+        separation = self.db.bfs(0, 3)
+        g_path = self.db.dfs(0, 3, separation+1)
+        self.assertEqual({0:set([3])}, g_path)
+        
+        separation = self.db.bfs(3, 1)
+        g_path = self.db.dfs(3, 1, separation+1)
+        self.assertEqual({3:set([0, 2]), 0:set([1]), 2:set([1])}, g_path)
+        
+        
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()
