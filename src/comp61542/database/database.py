@@ -754,13 +754,12 @@ class Database:
                 gotIt2 = self._dfs(adjacent, target, depth+1, limit, visited, path)
                 if gotIt2:
                     path[source].add(adjacent)
-                else:
-                    visited[adjacent] = False
+                visited[adjacent] = False
                 gotIt = gotIt2 or gotIt
             elif adjacent == target:
                 path[source] = set([adjacent])
                 gotIt = True
-                     
+        
         return gotIt
         
     def dfs(self, source, target, limit):
