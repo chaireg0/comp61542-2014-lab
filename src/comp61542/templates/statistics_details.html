@@ -48,12 +48,12 @@
         // Set chart options
         var options = {
         	width: "100%",
-        	height: graph_data.length*15,
+        	height: graph_data.length*21 + 100,
         	legend: { position: 'top', maxLines: 3 },
-			bar: { groupWidth: '60%' },
+			bar: { groupWidth: '70%' },
         	isStacked: true,
         	fontSize: 10,
-        	chartArea: {'height': graph_data.length*15 - 30}
+        	chartArea: {'height': graph_data.length*15 + 25}
       	};
         // Instantiate and draw our chart, passing in some options.
         var chart = new google.visualization.BarChart(document.getElementById('chart_div'));
