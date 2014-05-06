@@ -21,6 +21,7 @@
 	{% set data2 = table.rows %}
 	var graph_data=[];
 	var headers = [];
+	headers.push("Description");
 	{% for column in data1 %}
 		{% if column != "Overall" %}
 			headers.push( "{{ column }}" );
@@ -31,13 +32,10 @@
 	
 	{% for row in data2 %}
 		entry = [];
-		entry.push("No of publications");
-				
+		entry.push("{{table.title}}");			
 		{% for data_item in row %}
 			{% if data1[loop.index0] != "Overall" %}
-				{% if loop.index0 != 0 %}
-					entry.push({{ data_item }});
-				{% endif %}
+				entry.push({{ data_item }});		
 			{% endif %}
 		{% endfor %}
 		graph_data.push(entry);

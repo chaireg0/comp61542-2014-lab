@@ -57,8 +57,11 @@ function getCoauthorsGraph() {
 	$("#graph_div").empty();
 	var url = "/graph/{{request.args['authorA']}}/{{request.args['authorB']}}";
 	$.getJSON(url, function (graph) {
-		
-	
+		keys = Object.keys(graph);
+		if (keys.length == 0) {
+			$("#graph_div").prepend("<h3>{{request.args['authorA']}}</b><h2>X</h2><h3>{{request.args['authorB']}}</h3>");
+			return;
+		}
 		var graph_adj_l = graph;
 	    var g = new Graph();
 	    g.edgeFactory.template.style.directed = true;
