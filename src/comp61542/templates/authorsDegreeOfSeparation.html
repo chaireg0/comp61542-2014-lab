@@ -3,29 +3,6 @@
 
 {% block content %}
 
-<<<<<<< HEAD
-	<script type="text/javascript" src="{{ url_for('static', filename='sprint4_user_story_2_scripts/raphael-min.js') }}"></script>
-	<script type="text/javascript" src="{{ url_for('static', filename='sprint4_user_story_2_scripts/dracula_graffle.js') }}"></script>
-	<script type="text/javascript" src="{{ url_for('static', filename='sprint4_user_story_2_scripts/jquery-1.4.2.min.js') }}"></script>
-	<script type="text/javascript" src="{{ url_for('static', filename='sprint4_user_story_2_scripts/dracula_graph.js') }}"></script>
-
-<script type="text/javascript">
-function getCoauthorsGraph() {
-    var g = new Graph();
-    {% set dictKeys=args.shortest_path.keys() %}
-    {% for currKey in dictKeys %}
-    	{% set currSource=currKey %}
-    	{% for currDest in args.shortest_path[currKey] %}
-    		g.addEdge("{{ currSource }}", "{{ currDest }}");
-    	{% endfor %}
-    {% endfor %}
-    var layouter = new Graph.Layout.Spring(g);
-    layouter.layout();
-    var renderer = new Graph.Renderer.Raphael('graph_div', g, 400, 300);
-    renderer.draw();
-}
-</script>
-=======
 <script type="text/javascript" src="../static/js/raphael-min.js"></script>
 <script type="text/javascript" src="../static/js/dracula_graffle.js"></script>
 <script type="text/javascript" src="../static/js/jquery-1.4.2.min.js"></script>
@@ -33,7 +10,6 @@ function getCoauthorsGraph() {
 <script type="text/javascript" src="../static/js/dracula_algorithms.js"></script>
 <script type="text/javascript" src="../static/js/Curry-1.0.1.js"></script>
 <script type="text/javascript" src="../static/js/seedrandom.js"></script>
->>>>>>> vasilis/master
 
 <h1>{{ args.title }}</h1>
 
