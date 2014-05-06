@@ -430,8 +430,12 @@ def getAuthorProfile(author):
     db.set_breadcrump(name=author, link="/profile/"+author, level=2)
     args = {"dataset":dataset, "id":"coauthors"}
     args['title'] = author + " profile"
+    args['real_author_name'] = author
     
     tables = db.get_author_profile(author)
     args["tables"] = tables
     args["breadcrump"] = db.breadcrump
+    
+    args["coauthor_names_dictionary"] = db.get_coauthor_names(author)
+    
     return render_template('author_profile.html',args=args )
